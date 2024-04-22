@@ -4,6 +4,7 @@ from pygame import (K_ESCAPE, K_LSHIFT, K_LEFT, K_RIGHT, K_BACKSPACE, K_RETURN,
                     init, quit as squit,
                     KEYDOWN, QUIT)
 from typing import List, Callable
+from math import pi, cos, sin
 from pathlib import Path
 from sys import exit
 
@@ -53,6 +54,8 @@ class TextInputManager:
         attrname = f"_process_{key.name(ev.key)}"
         if hasattr(self, attrname):
             getattr(self, attrname)()
+        elif ev.key == K_ESCAPE:
+            pass
         else:
             self._process_other(ev)
 
@@ -252,21 +255,57 @@ mouse_pos = Vector2()
 
 key.start_text_input()
 
-with open(gamedir/"coded.py", "r") as f:
-    code_init, code_process = f.read().split("\n\nwhile True:\n")
-    exec(code_init)
+with open(gamedir/"coded.mlog", "r") as f:
+    exec("from pygame import draw")
+    code_process = f.read()
     code_textarea = TextInputVisualizer(TextInputManager(code_process,
                                                          validator=lambda i: True),
                                         FONT, True, Ctxt)
 del f
 
 
-def queuit():
-    with open(gamedir/"coded.py", "w") as f:
-        f.write(f"{code_init}\n\nwhile True:\n{code_textarea.value}")
-    del f
+def queuit() -> None:
+    with open(gamedir/"coded.mlog", "w", encoding="utf-8") as f:
+        f.write(str(code_textarea.value))
     squit()
     exit()
+
+
+def mlog_to_python(code: str) -> str:
+    i = code.split()
+    if i[0] == "draw":
+        match i[1]:
+            case "clear":
+                return f"WIN.fill(({int(i[2])}, {int(i[3])}, {int(i[4])}))"
+            case "color":
+                return f"processor_color = ({i[2]}, {i[3]}, {i[4]}, {i[5]})"
+            case "col":
+                return NotImplemented
+            case "stroke":
+                return f"processor_width = {i[2]}"
+            case "line":
+                return f"draw.line(WIN, processor_color, ({i[2]}, {i[3]}), ({i[4]}, {i[5]}), processor_width)"
+            case "rect":
+                return f"draw.rect(WIN, processor_color, ({i[2]}, {i[3]}, {i[4]}, {i[5]}))"
+            case "lineRect":
+                return f"draw.rect(WIN, processor_color, ({i[2]}, {i[3]}, {i[4]}, {i[5]}), processor_width)"
+            case "poly":
+                return f"draw.polygon(WIN, processor_color, {[(int(i[2])+cos(pi*2*int(i[4])/(j+1)+int(i[6]))*int(i[5]), int(i[3])+sin(pi*2*int(i[4])/(j+1)+int(i[6]))*int(i[5])) for j in range(int(i[4]))]})"
+            case "linePoly":
+                return f"draw.polygon(WIN, processor_color, {[(int(i[2])+cos(pi*2*int(i[4])/(j+1)+int(i[6]))*int(i[5]), int(i[3])+sin(pi*2*int(i[4])/(j+1)+int(i[6]))*int(i[5])) for j in range(int(i[4]))]}, processor_width)"
+            case "triangle":
+                return f"draw.polygon(WIN, processor_color, (({i[2]}, {i[3]}), ({i[4]}, {i[5]}), ({i[6]}, {i[7]})))"
+            case "image":
+                return NotImplemented
+            case _:
+                pass  # raise NotImplementedError
+    else:
+        pass  # raise NotImplementedError
+
+
+processor_width = 1
+processor_color = (0, 0, 0)
+decoded = []
 
 
 while True:
@@ -277,28 +316,32 @@ while True:
     keys_pressed = key.get_pressed()
     events = event.get()
 
-    code_textarea.update(events)
-
     for e in events:
         if e.type == QUIT or keys_pressed[K_ESCAPE]:
             queuit()
-        elif e.type == KEYDOWN:
-            if e.key == K_ESCAPE:
-                queuit()
-            elif e.key not in (K_LSHIFT, K_LEFT, K_RIGHT, K_BACKSPACE):
-                print(key.name(e.key))
-            if e.key == K_RETURN:
-                code_textarea.manager.left += "\n"
+        # elif e.type == KEYDOWN:
+            # if e.key not in (K_LSHIFT, K_LEFT, K_RIGHT, K_BACKSPACE, K_RETURN):
+            #     print(key.name(e.key))
+            # if e.key == K_RETURN:
+            #     code_textarea.manager.left += "\n"
 
-    try:
-        exec(f"if True:\n{code_textarea.value}")
-        excepp = ""
-    except Exception as e:
-        excepp = f"{e.__repr__()}"
+    code_textarea.update(events)
 
-    WIN.blits(((FONT.render(excepp, 1, (255, 0, 0)), (0, 0)),
-              *[(FONT.render(f"{j if j > 0 else '':>3}| {i}", 1, Ctxt2), (0, font_height*j))
-                for j, i in enumerate([CLOCK.get_fps(), *[k[4:] for k in f"{code_textarea.manager.left}|{code_textarea.manager.right}".split("\n")]])]))
+    decoded = []
+    for j, i in enumerate(code_textarea.value.split("\n")):
+        try:
+            decoded.append(mlog_to_python(i))
+            exec(decoded[j])
+            excepp = ""
+        except Exception as e:
+            decoded.append("")
+            excepp = f"{e!s}, {i}"
+
+    WIN.blits(((FONT.render(excepp, 1, (255, 0, 0)), (5, 0)),
+              *[(FONT.render(f"{j if j > 0 else '':>3}| {i}", 1, Ctxt2), (5, font_height*(j+1)))
+                for j, i in enumerate([CLOCK.get_fps(),
+                                       *[f"{k} | {decoded[m]}"
+                                         for m, k in enumerate(f"{code_textarea.manager.left}|{code_textarea.manager.right}".split("\n"))]])]))
     display.flip()
     delta = CLOCK.tick(60)/1000
     if not delta:
