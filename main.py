@@ -258,7 +258,7 @@ events = Tuple[event.Event]
 key.set_repeat(200, 100)
 key.start_text_input()
 
-with open(gamedir/"coded.mlog", "r") as f:
+with open(gamedir/"codeexample.mlog", "r") as f:
     exec("from pygame import draw")
     code_textarea: TextInputVisualizer = TextInputVisualizer(TextInputManager(f.read(),
                                                                               validator=lambda i: True),
@@ -267,7 +267,7 @@ del f
 
 
 def queuit() -> None:
-    with open(gamedir/"coded.mlog", "w", encoding="utf-8") as f:
+    with open(gamedir/"codeexample.mlog", "w", encoding="utf-8") as f:
         f.write(str(code_textarea.value))
     squit()
     exit()
