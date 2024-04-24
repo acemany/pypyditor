@@ -1,14 +1,12 @@
-from pygame import (K_ESCAPE, K_LSHIFT, K_LEFT, K_RIGHT, K_BACKSPACE, K_RETURN,
-                    display, event, font, key, mouse, time,
-                    Rect, Surface, Vector2,
+from pygame import (display, event, font, key, mouse, time,
+                    Rect, Surface, Vector2, Color,
                     init, quit as squit,
-                    KEYDOWN, QUIT)
-from typing import List, Callable
-from math import pi, cos, sin
+                    KEYDOWN, QUIT,
+                    K_ESCAPE)
+from typing import Callable, List, Tuple
 from pathlib import Path
 from sys import exit
-
-font.init()
+exec("from math import pi, cos, sin")  # for made pyflake8 shut up
 
 
 class TextInputManager:
@@ -233,34 +231,38 @@ class TextInputVisualizer:
             self._surface.fill(self._cursor_color, cursor_rect)
 
 
+font.init()
+
 init()
-WIN = display.set_mode()
-WIDTH, HEIGHT = SC_RES = Vector2(WIN.get_size())
-FONT = font.SysFont('Monospace', 12, bold=True)
-CLOCK = time.Clock()
+WIN: Surface = display.set_mode()
+SC_RES: Vector2 = Vector2(WIN.get_size())
+WIDTH, HEIGHT = SC_RES
+FONT: font.Font = font.SysFont('Monospace', 12, bold=True)
+CLOCK: time.Clock = time.Clock()
+gamedir: Path = Path(__file__).parent
+font_size: Tuple[int, int] = FONT.size("N")
+font_width, font_height = font_size
+
+Cbuttonua: Color = (63, 63, 63)
+Cbuttona: Color = (4, 104, 170)
+Cbg: Color = (18, 18, 18)
+Ctxt: Color = (207, 212, 218)
+Ctxt2: Color = (164, 161, 171)
+
+delta: float = 0.1/6
+mouse_pos: Vector2 = Vector2()
+mouse_pressed: Tuple[bool, bool, bool]
+keys_pressed: Tuple[bool]
+events = Tuple[event.Event]
+
 key.set_repeat(200, 100)
-gamedir = Path(__file__).parent
-font_width, font_height = font_size = FONT.size("N")
-
-excepp = ""
-
-Cbuttonua = (63, 63, 63)
-Cbuttona = (4, 104, 170)
-Cbg = (18, 18, 18)
-Ctxt = (207, 212, 218)
-Ctxt2 = (164, 161, 171)
-
-delta = 0.1/6
-mouse_pos = Vector2()
-
 key.start_text_input()
 
 with open(gamedir/"coded.mlog", "r") as f:
     exec("from pygame import draw")
-    code_process = f.read()
-    code_textarea = TextInputVisualizer(TextInputManager(code_process,
-                                                         validator=lambda i: True),
-                                        FONT, True, Ctxt)
+    code_textarea: TextInputVisualizer = TextInputVisualizer(TextInputManager(f.read(),
+                                                                              validator=lambda i: True),
+                                                             FONT, True, Ctxt)
 del f
 
 
@@ -272,40 +274,55 @@ def queuit() -> None:
 
 
 def mlog_to_python(code: str) -> str:
-    i = code.split()
-    if i[0] == "draw":
-        match i[1]:
-            case "clear":
-                return f"WIN.fill(({int(i[2])}, {int(i[3])}, {int(i[4])}))"
-            case "color":
-                return f"processor_color = ({i[2]}, {i[3]}, {i[4]}, {i[5]})"
-            case "col":
-                return NotImplemented
-            case "stroke":
-                return f"processor_width = {i[2]}"
-            case "line":
-                return f"draw.line(WIN, processor_color, ({i[2]}, {i[3]}), ({i[4]}, {i[5]}), processor_width)"
-            case "rect":
-                return f"draw.rect(WIN, processor_color, ({i[2]}, {i[3]}, {i[4]}, {i[5]}))"
-            case "lineRect":
-                return f"draw.rect(WIN, processor_color, ({i[2]}, {i[3]}, {i[4]}, {i[5]}), processor_width)"
-            case "poly":
-                return f"draw.polygon(WIN, processor_color, {[(int(i[2])+cos(pi*2*int(i[4])/(j+1)+int(i[6]))*int(i[5]), int(i[3])+sin(pi*2*int(i[4])/(j+1)+int(i[6]))*int(i[5])) for j in range(int(i[4]))]})"
-            case "linePoly":
-                return f"draw.polygon(WIN, processor_color, {[(int(i[2])+cos(pi*2*int(i[4])/(j+1)+int(i[6]))*int(i[5]), int(i[3])+sin(pi*2*int(i[4])/(j+1)+int(i[6]))*int(i[5])) for j in range(int(i[4]))]}, processor_width)"
-            case "triangle":
-                return f"draw.polygon(WIN, processor_color, (({i[2]}, {i[3]}), ({i[4]}, {i[5]}), ({i[6]}, {i[7]})))"
-            case "image":
-                return NotImplemented
-            case _:
-                pass  # raise NotImplementedError
-    else:
-        pass  # raise NotImplementedError
+    i: Tuple[str] = code.split()
+    match i[0]:
+        case "draw":
+            match i[1]:
+                case "clear":
+                    return f"processor_surface.fill(({int(i[2])}, {int(i[3])}, {int(i[4])}))"
+                case "color":
+                    return f"processor_color = ({i[2]}, {i[3]}, {i[4]}, {i[5]})"
+                case "col":
+                    return "NotImplemented"
+                case "stroke":
+                    return f"processor_width = {i[2]}"
+                case "line":
+                    return f"draw.line(processor_surface, processor_color, ({i[2]}, {i[3]}), ({i[4]}, {i[5]}), processor_width)"
+                case "rect":
+                    return f"draw.rect(processor_surface, processor_color, ({i[2]}, {i[3]}, {i[4]}, {i[5]}))"
+                case "lineRect":
+                    return f"draw.rect(processor_surface, processor_color, ({i[2]}, {i[3]}, {i[4]}, {i[5]}), processor_width)"
+                case "poly":
+                    return f"draw.polygon(processor_surface, processor_color, [({i[2]}+cos(pi*2/{i[4]}*j+{i[6]})*{i[5]}, {i[3]}+sin(pi*2/{i[4]}*j+{i[6]})*{i[5]}) for j in range({i[4]})])"
+                case "linePoly":
+                    return f"draw.polygon(processor_surface, processor_color, [({i[2]}+cos(pi*2/{i[4]}*j+{i[6]})*{i[5]}, {i[3]}+sin(pi*2/{i[4]}*j+{i[6]})*{i[5]}) for j in range({i[4]})], processor_width)"
+                case "triangle":
+                    return f"draw.polygon(processor_surface, processor_color, (({i[2]}, {i[3]}), ({i[4]}, {i[5]}), ({i[6]}, {i[7]})))"
+                case "image":
+                    return "NotImplemented"
+                case _:
+                    return "NotImplemented"
+        case "read":
+            return f"{i[1]} = {i[2]}[{i[3]}]"
+        case "write":
+            return f"{i[2]}[{i[3]}] = {i[1]}"
+        case "print":
+            return f"processor_textbuffer += {i[1]}"
+        case "drawflush":
+            return f"{i[1]}.blit(processor_surface, (0, 0))"
+        case "printflush":
+            return f'print("{processor_textbuffer}"); processor_textbuffer = ""'
+        case _:
+            return "NotImplemented"
 
 
-processor_width = 1
-processor_color = (0, 0, 0)
-decoded = []
+processor_width: int = 1
+processor_color: Color = (0, 0, 0)
+processor_surface: Surface = Surface(SC_RES)
+processor_textbuffer: str = ""
+cell1: List[str] = ["" for i in range(64)]
+decoded: List[str] = []
+excepp: List[str] = []
 
 
 while True:
@@ -327,21 +344,24 @@ while True:
 
     code_textarea.update(events)
 
-    decoded = []
+    decoded.clear()
+    excepp.clear()
     for j, i in enumerate(code_textarea.value.split("\n")):
+        # print(mlog_to_python(i), i)
         try:
             decoded.append(mlog_to_python(i))
             exec(decoded[j])
-            excepp = ""
         except Exception as e:
             decoded.append("")
-            excepp = f"{e!s}, {i}"
+            excepp.append(f"{e!s} !!! {i}")
 
-    WIN.blits(((FONT.render(excepp, 1, (255, 0, 0)), (5, 0)),
-              *[(FONT.render(f"{j if j > 0 else '':>3}| {i}", 1, Ctxt2), (5, font_height*(j+1)))
-                for j, i in enumerate([CLOCK.get_fps(),
-                                       *[f"{k} | {decoded[m]}"
-                                         for m, k in enumerate(f"{code_textarea.manager.left}|{code_textarea.manager.right}".split("\n"))]])]))
+    prepared_code: Tuple[str] = f"{code_textarea.manager.left}|{code_textarea.manager.right}".split("\n")
+    for m, n in enumerate(prepared_code):
+        WIN.blit(FONT.render(f"{m:>3}| {n} | {decoded[m]}", 1, Ctxt2), (5, font_height*(m+0.5)))
+
+        WIN.blits(((FONT.render(i, 1, (255, 0, 0)), (5, font_height*j))
+                   for j, i in enumerate(excepp)))
+
     display.flip()
     delta = CLOCK.tick(60)/1000
     if not delta:

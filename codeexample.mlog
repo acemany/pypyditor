@@ -1,0 +1,6 @@
+drawflush WIN
+read result cell1 0
+write result cell1 0
+print ""
+drawflush WIN
+printflush message
