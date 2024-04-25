@@ -316,97 +316,100 @@ def mlog_to_python(code: str) -> str:
         case "write":
             return f"{i[2]}[{i[3]}] = {i[1]}"
         case "print":
-            return f"processor_textbuffer += {i[1]}"
+            return f"processor_textbuffer += str({i[1]})"
         case "drawflush":
             return f"{i[1]}.blit(processor_surface, (0, 0))"
         case "printflush":
-            return 'print("processor_textbuffer"); processor_textbuffer = ""'
+            return ''
         case "op":
             match i[1]:
                 case "add":
-                    return f"{i[2]} + {i[3]}"
+                    opeq = f"{i[3]} + {i[4]}"
                 case "sub":
-                    return f"{i[2]} - {i[3]}"
+                    opeq = f"{i[3]} - {i[4]}"
                 case "mul":
-                    return f"{i[2]} * {i[3]}"
+                    opeq = f"{i[3]} * {i[4]}"
                 case "div":
-                    return f"{i[2]} / {i[3]}"
+                    opeq = f"{i[3]} / {i[4]}"
                 case "idiv":
-                    return f"{i[2]} // {i[3]}"
+                    opeq = f"{i[3]} // {i[4]}"
                 case "mod":
-                    return f"{i[2]} % {i[3]}"
+                    opeq = f"{i[3]} % {i[4]}"
                 case "pow":
-                    return f"{i[2]} ** {i[3]}"
+                    opeq = f"{i[3]} ** {i[4]}"
 
                 case "equal":
-                    return f"abs({i[2]} - {i[3]}) < 0.000001"
+                    opeq = f"abs({i[3]} - {i[4]}) < 0.000001"
                 case "notEqual":
-                    return f"abs({i[2]} - {i[3]}) >= 0.000001"
+                    opeq = f"abs({i[3]} - {i[4]}) >= 0.000001"
                 case "land":
-                    return f"{i[2]} != 0 && {i[3]} != 0"
+                    opeq = f"{i[3]} != 0 && {i[4]} != 0"
                 case "lessThan":
-                    return f"{i[2]} < {i[3]}"
+                    opeq = f"{i[3]} < {i[4]}"
                 case "lessThanEq":
-                    return f"{i[2]} <= {i[3]}"
+                    opeq = f"{i[3]} <= {i[4]}"
                 case "greaterThan":
-                    return f"{i[2]} > {i[3]}"
+                    opeq = f"{i[3]} > {i[4]}"
                 case "greaterThanEq":
-                    return f"{i[2]} >= {i[3]}"
+                    opeq = f"{i[3]} >= {i[4]}"
                 case "strictEqual":
-                    return "0"
+                    "0"
 
                 case "shl":
-                    return f"{i[2]} << {i[3]}"
+                    opeq = f"{i[3]} << {i[4]}"
                 case "shr":
-                    return f"{i[2]} >> {i[3]}"
+                    opeq = f"{i[3]} >> {i[4]}"
                 case "or":
-                    return f"{i[2]} | {i[3]}"
+                    opeq = f"{i[3]} | {i[4]}"
                 case "and":
-                    return f"{i[2]} & {i[3]}"
+                    opeq = f"{i[3]} & {i[4]}"
                 case "xor":
-                    return f"{i[2]} ^ {i[3]}"
+                    opeq = f"{i[3]} ^ {i[4]}"
                 case "not":
-                    return f"~{i[2]}"
+                    opeq = f"~{i[3]}"
 
                 case "max":
-                    return f"max({i[2]}, {i[3]})"
+                    opeq = f"max({i[3]}, {i[4]})"
                 case "min":
-                    return f"min({i[2]}, {i[3]})"
+                    opeq = f"min({i[3]}, {i[4]})"
                 case "angle":
-                    return f"(atan2({i[3]}, {i[2]}) * 180/pi) % 360"
+                    opeq = f"(atan2({i[4]}, {i[3]}) * 180/pi) % 360"
                 case "angleDiff":
-                    return f"min(({i[3]} - {i[2]})%360, ({i[2]} - {i[3]})%360)"
+                    opeq = f"min(({i[4]} - {i[3]})%360, ({i[3]} - {i[4]})%360)"
                 case "len":
-                    return f"abs({i[2]} - {i[3]})"
+                    opeq = f"abs({i[3]} - {i[4]})"
                 case "noise":
-                    return f"raw2d(0, {i[2]}, {i[3]})"
+                    opeq = f"raw2d(0, {i[3]}, {i[4]})"
                 case "abs":
-                    return f"abs({i[2]})"
+                    opeq = f"abs({i[3]})"
                 case "log":
-                    return f"log({i[2]})"
+                    opeq = f"log({i[3]})"
                 case "log10":
-                    f"log({i[2]}, 10)"
+                    opeq = f"log({i[3]}, 10)"
                 case "floor":
-                    return f"int({i[2]})"
+                    opeq = f"int({i[3]})"
                 case "ceil":
-                    return f"ceil({i[2]})"
+                    opeq = f"ceil({i[3]})"
                 case "sqrt":
-                    return f"{i[2]} ** 0.5"
+                    opeq = f"{i[3]} ** 0.5"
                 case "rand":
-                    f"random() * {i[2]}"
+                    opeq = f"random() * {i[3]}"
 
                 case "sin":
-                    f"sin({i[2]} / 180*pi)"
+                    opeq = f"sin({i[3]} / 180*pi)"
                 case "cos":
-                    f"cos({i[2]} / 180*pi)"
+                    opeq = f"cos({i[3]} / 180*pi)"
                 case "tan":
-                    f"tan({i[2]} / 180*pi)"
+                    opeq = f"tan({i[3]} / 180*pi)"
 
                 case "asin":
-                    f"asin({i[2]}) / 180*pi)"
+                    opeq = f"asin({i[3]}) / 180*pi)"
                 case "acos":
-                    f"acos({i[2]}) / 180*pi)"
+                    opeq = f"acos({i[3]}) / 180*pi)"
                 case "atan":
-                    f"atan({i[2]}) / 180*pi)"
+                    opeq = f"atan({i[3]}) / 180*pi)"
+                case _:
+                    return "NotImplemented"
+            return f"{i[2]} = {opeq}"
         case _:
             return "NotImplemented"

@@ -1,6 +1,8 @@
-drawflush WIN
-read result cell1 0
-write result cell1 0
-print ""
+op cos result 45
+op mul result result result
+op noise y 4 6
+print y
+print "\n"
+print result
 drawflush WIN
 printflush message
