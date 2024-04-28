@@ -1,13 +1,9 @@
-from pygame import (event, font, key, time,
+from pygame import (event, font, time,
                     Rect, Surface,
-                    KEYDOWN,
-                    K_ESCAPE)
+                    KEYDOWN)
 from typing import Callable, List, Tuple
 from functools import cache
-exec("""from math import (asin, acos, atan,
-                  sin, cos, tan,
-                  log, ceil,
-                  pi)
+exec("""
 from random import random""")  # i hate this linter
 
 
@@ -55,44 +51,30 @@ class TextInputManager:
                     self.value = v_before
                     self.cursor_pos = c_before
 
-    def _process_keydown(self, ev: event.Event):
-        attrname = f"_process_{key.name(ev.key)}"
-        if hasattr(self, attrname):
-            getattr(self, attrname)()
-        elif ev.key == K_ESCAPE:
-            pass
-        else:
-            self._process_other(ev)
-
-    def _process_delete(self):
-        self.right = self.right[1:]
-
-    def _process_backspace(self):
-        self.left = self.left[:-1]
-
-    def _process_left(self):
-        self.cursor_pos -= 1
-
-    def _process_right(self):
-        self.cursor_pos += 1
-
-    def _process_up(self):
-        self.cursor_pos -= 10
-
-    def _process_down(self):
-        self.cursor_pos += 10
-
-    def _process_end(self):
-        self.cursor_pos = len(self.value)
-
-    def _process_home(self):
-        self.cursor_pos = 0
-
-    def _process_return(self):
-        self.left += "\n"
-
-    def _process_other(self, event: event.Event):
-        self.left += event.unicode
+    def _process_keydown(self, e: event.Event):
+        match e.key:
+            case 27:  # K_ESCAPE
+                pass
+            case 127:  # K_DELETE
+                self.right = self.right[1:]
+            case 8:  # K_BACKSPACE
+                self.left = self.left[:-1]
+            case 1073741904:  # K_LEFT
+                self.cursor_pos -= 1 if self.cursor_pos > 0 else 0
+            case 1073741903:  # K_RIGHT
+                self.cursor_pos += 1
+            case 1073741906:  # K_UP
+                self.cursor_pos -= 10 if self.cursor_pos > 9 else self.cursor_pos
+            case 1073741905:  # K_DOWN
+                self.cursor_pos += 10
+            case 1073741901:  # K_END
+                self.cursor_pos = len(self.value)
+            case 1073741898:  # K_HOME
+                self.cursor_pos = 0
+            case 13:  # K_RETURN
+                self.left += "\n"
+            case _:
+                self.left += e.unicode
 
 
 class TextInputVisualizer:

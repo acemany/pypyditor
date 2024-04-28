@@ -1,8 +1,6 @@
-op cos result 45
-op mul result result result
-op noise y 4 6
-print y
-print "\n"
-print result
+op add ii ii 1
+op mod x ii 176
+op idiv y ii 176
+draw color x y 127 255 0 0
+draw rect x y 1 1 0 0
 drawflush WIN
-printflush message

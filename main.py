@@ -1,13 +1,15 @@
 from mlog_lib import mlog_to_python, TextInputManager, TextInputVisualizer
-from pygame import (display, event, font, key, mouse, time,
+from pygame import (display, draw, event, font, key, mouse, time,
                     Surface, Vector2, Color,
                     init, quit as squit,
                     K_ESCAPE,
                     QUIT)
 from typing import List, Tuple
+from math import ceil, log10
 from pathlib import Path
+
 from sys import exit
-exec("from math import pi, cos, sin; from mlog_lib import raw2d")  # for made pyflake8 shut up
+exec("from mlog_lib import raw2d")  # for made pyflake8 shut up
 
 
 font.init()
@@ -22,11 +24,12 @@ gamedir: Path = Path(__file__).parent
 font_size: Tuple[int, int] = FONT.size("N")
 font_width, font_height = font_size
 
-Cbuttonua: Color = (63, 63, 63)
-Cbuttona: Color = (4, 104, 170)
 Cbg: Color = (18, 18, 18)
+Cfg: Color = (36, 36, 36)
 Ctxt: Color = (207, 212, 218)
 Ctxt2: Color = (164, 161, 171)
+Coutline: Color = (255, 255, 255)
+Cerror: Color = (255, 15, 15)
 
 delta: float = 0.1/6
 mouse_pos: Vector2 = Vector2()
@@ -52,9 +55,11 @@ def queuit() -> None:
     exit()
 
 
+linesqrt10 = ceil(log10(len(code_textarea.value.split("\n"))+1))
 processor_width: int = 1
 processor_color: Color = (0, 0, 0)
 processor_surface: Surface = Surface(SC_RES)
+processor_surface.fill(Cbg)
 text_surface: Surface
 processor_textbuffer: str = ""
 cell1: List[str] = ["" for i in range(64)]
@@ -73,38 +78,46 @@ while True:
     for e in events:
         if e.type == QUIT or keys_pressed[K_ESCAPE]:
             queuit()
-        # elif e.type == KEYDOWN:
-            # if e.key not in (K_LSHIFT, K_LEFT, K_RIGHT, K_BACKSPACE, K_RETURN):
-            #     print(key.name(e.key))
-            # if e.key == K_RETURN:
-            #     code_textarea.manager.left += "\n"
 
     code_textarea.update(events)
 
-    decoded.clear()
-    excepp.clear()
-    for j, i in enumerate(code_textarea.value.split("\n")):
-        # print(mlog_to_python(i), i)
-        try:
-            decoded.append(mlog_to_python(i))
-            exec(decoded[j])
-        except Exception as e:
-            decoded.append("")
-            excepp.append(f"{e!s} !!! {i}")
+    if 1:  # unoptimised
+        linesqrt10 = ceil(log10(len(code_textarea.value.split("\n"))+1))
+
+    for m in range(48):
+        processor_textbuffer = f"{linesqrt10}   "
+        decoded.clear()
+        excepp.clear()
+        for j, i in enumerate(code_textarea.value.split("\n")):
+            try:
+                k = i.split()
+                if k[0] == "op" and k[2] not in globals():
+                    exec(f"global {k[2]};{k[2]} = 0")
+                _ = mlog_to_python(i)
+                exec(_)
+                decoded.append(_)
+                excepp.append("")
+            except Exception as e:
+                decoded.append("")
+                excepp.append(f" ! {e!s} !!! {i}")
+    if len(decoded) != len(excepp) != len(code_textarea.value.split("\n")):
+        print(decoded, excepp, code_textarea.value.split("\n"))
 
     prepared_code: Tuple[str] = f"{code_textarea.manager.left}|{code_textarea.manager.right}".split("\n")
-    for m, n in enumerate(prepared_code):
-        WIN.blit(FONT.render(f"{m:>3}| {n} | {decoded[m]}", 1, Ctxt2), (5, font_height*(m+0.5)))
-
-        WIN.blits(((FONT.render(i, 1, (255, 0, 0)), (5, font_height*j))
-                   for j, i in enumerate(excepp)))
+    for j, i in enumerate(prepared_code):
+        WIN.blits(((FONT.render(f"{i} | {decoded[j]}", 1, Ctxt2), (font_width*(linesqrt10+0.5), font_height*j)),
+                   (FONT.render(f"{j+1}", 1, Ctxt2), (0, font_height*j))))
+        if mouse_pos.x == WIDTH-1:
+            WIN.blit(FONT.render(excepp[j], 1, Cerror, Cfg), (0, font_height*j))
 
     for j, i in enumerate(processor_textbuffer.split("\n")):
         text_surface = FONT.render(i, 1, (127, 255, 127))
         WIN.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j)))
-    processor_textbuffer = ""
+
+    draw.aaline(WIN, Coutline, (font_width*linesqrt10, 0), (font_width*linesqrt10, HEIGHT))
 
     display.flip()
-    delta = CLOCK.tick(60)/1000
+
+    delta = CLOCK.tick(600)/1000
     if not delta:
         delta = 1/60
