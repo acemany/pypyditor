@@ -149,6 +149,12 @@ while True:
 
     draw.aaline(display1, Coutline, (font_width*linelog10, 0), (font_width*linelog10, HEIGHT))
 
+    display1.blits([(FONT.render(var, 1, Ctxt2), (WIDTH/2, font_height*(y+1)))
+                    for y, var in enumerate((f"{i[0]} = {i[1]!r}"
+                                             for i in globals().items()
+                                             if i[0] not in ("__name__", "__doc__", "__package__", "__loader__", "__spec__", "__annotations__", "__builtins__", "__file__", "__cached__",
+                                                             "mlog_to_python", "TextInputManager", "TextInputVisualizer", "display", "draw", "event", "font", "key", "mouse", "time", "Surface",
+                                                             "Vector2", "Color", "init", "squit", "K_ESCAPE", "QUIT", "List", "Tuple", "ceil", "log10", "Path", "exit", "raw2d")))])
 
     display.flip()
     delta = CLOCK.tick(60)/1000
