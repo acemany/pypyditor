@@ -227,6 +227,8 @@ def perm(seed: int, x: int):
 
 
 def raw2d(seed: int, x: float, y: float):
+    "idk how i translated this from java but it works"
+
     s: float = (x + y) * 0.3660254037844386
     i: int = int(x + s)
     j: int = int(y + s)
@@ -269,6 +271,11 @@ def raw2d(seed: int, x: float, y: float):
 
 
 def mlog_to_python(code: str) -> str:
+    """Transforms Mlog code(from processors from Mindustry) to python code.\n
+    args[0] is the name of command\n
+    args[1] is the type of command if command is draw or op, else it is first arg\n
+    other args is just args"""
+
     args: Tuple[str] = code.split()
 
     match args[0]:
