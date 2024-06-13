@@ -24,14 +24,15 @@ gamedir: Path = Path(__file__).parent
 font_size: Tuple[int, int] = FONT.size("N")
 font_width, font_height = font_size
 
-Cbg: Color = (18, 18, 18)
-Cfg: Color = (36, 36, 36)
-Ctxt: Color = (207, 212, 218)
-Ctxt2: Color = (164, 161, 171)
-Coutline: Color = (255, 255, 255)
-Cerror: Color = (255, 15, 15)
-
 delta: float = 0.1/6
+Cbg: Color = Color(18, 18, 18)
+Cfg: Color = Color(36, 36, 36)
+Ctxt: Color = Color(207, 212, 218)
+Ctxt2: Color = Color(164, 161, 171)
+Coutline: Color = Color(255, 255, 255)
+Cerror: Color = Color(255, 15, 15)
+
+delta: float = 1/60
 mouse_pos: Vector2 = Vector2()
 mouse_pressed: Tuple[bool, bool, bool]
 keys_pressed: Tuple[bool]
