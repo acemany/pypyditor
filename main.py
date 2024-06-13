@@ -84,34 +84,60 @@ while True:
 
     code_textarea.update(events)
 
-    if 1:  # unoptimised
-        linesqrt10 = ceil(log10(len(code_textarea.value.split("\n"))+1))
+    inputt = code_textarea.value.split("\n")
+    inputt_len: int = len(inputt)
 
-    for m in range(48):
-        processor_textbuffer = f"{linesqrt10}   "
-        decoded.clear()
-        excepp.clear()
-        for j, i in enumerate(code_textarea.value.split("\n")):
-            try:
-                k = i.split()
-                if k[0] == "op" and k[2] not in globals():
-                    exec(f"global {k[2]};{k[2]} = 0")
-                _ = mlog_to_python(i)
-                exec(_)
-                decoded.append(_)
-                excepp.append("")
-            except Exception as e:
-                decoded.append("")
-                excepp.append(f" ! {e!s} !!! {i}")
-    if len(decoded) != len(excepp) != len(code_textarea.value.split("\n")):
-        print(decoded, excepp, code_textarea.value.split("\n"))
+    while len(decoded) != inputt_len:
+        if len(decoded) < inputt_len:
+            decoded.append("")
+            excepp.append("")
+        elif len(decoded) > inputt_len:
+            decoded.pop()
+            excepp.pop()
 
-    prepared_code: Tuple[str] = f"{code_textarea.manager.left}|{code_textarea.manager.right}".split("\n")
-    for j, i in enumerate(prepared_code):
-        WIN.blits(((FONT.render(f"{i} | {decoded[j]}", 1, Ctxt2), (font_width*(linesqrt10+0.5), font_height*j)),
-                   (FONT.render(f"{j+1}", 1, Ctxt2), (0, font_height*j))))
-        if mouse_pos.x == WIDTH-1:
-            WIN.blit(FONT.render(excepp[j], 1, Cerror, Cfg), (0, font_height*j))
+    if 1:
+        linelog10 = ceil(log10(inputt_len+1))
+
+    while timer >= processor_speed:
+        processor_textbuffer = f"{linelog10}   "
+        processor_counter += 1
+        processor_counter %= inputt_len
+
+        raw_line: str = inputt[processor_counter]
+        try:
+            if not raw_line:
+                decoded[processor_counter] = ""
+                excepp[processor_counter] = ""
+                continue
+            k = raw_line.split()
+            if k[0] == "op" and k[2] not in globals():
+                exec(f"global {k[2]};{k[2]} = 0")
+            _ = mlog_to_python(raw_line)
+            exec(_)
+            decoded[processor_counter] = _
+            excepp[processor_counter] = ""
+        except Exception as e:
+            decoded[processor_counter] = ""
+            excepp[processor_counter] = f"{e!s}"
+        timer -= processor_speed
+
+    if len(decoded) != len(excepp) != inputt_len:
+        print(decoded, excepp, inputt)
+        raise IndexError("These lists not match? Strange...")
+
+    for j, i in enumerate(f"{code_textarea.manager.left}|{code_textarea.manager.right}".split("\n")):
+        if excepp[j]:
+            draw.rect(display1, Cerror, (WIDTH-font_width, j*font_height, *font_size))
+            draw.rect(display1, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4), (0, j*font_height, WIDTH-font_width, font_height))
+
+        display1.blit(FONT.render(f"{j+1}", 1, Ctxt2), (0, font_height*j))
+
+        display1.blit(FONT.render(i, 1, Ctxt), (font_width*(linelog10+0.5), font_height*j))
+
+        if mouse_pos.x >= WIDTH-font_width:
+            display1.blit(FONT.render(decoded[j], 1, Ctxt2), (WIDTH-FONT.size(decoded[j])[0]-font_width, font_height*j))
+
+            display1.blit(FONT.render(excepp[j], 1, Cerror), (WIDTH-FONT.size(excepp[j])[0]-font_width, font_height*j))
 
     for j, i in enumerate(processor_textbuffer.split("\n")):
         text_surface = FONT.render(i, 1, (127, 255, 127))
