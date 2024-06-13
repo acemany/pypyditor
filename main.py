@@ -24,7 +24,6 @@ gamedir: Path = Path(__file__).parent
 font_size: Tuple[int, int] = FONT.size("N")
 font_width, font_height = font_size
 
-delta: float = 0.1/6
 Cbg: Color = Color(18, 18, 18)
 Cfg: Color = Color(36, 36, 36)
 Ctxt: Color = Color(207, 212, 218)
@@ -66,10 +65,12 @@ processor_textbuffer: str = ""
 cell1: List[str] = ["" for i in range(64)]
 decoded: List[str] = []
 excepp: List[str] = []
+timer: int = 0
 display1.convert_alpha()
 
 
 while True:
+    timer += 1/delta
     display1.fill(Cbg)
 
     mouse_pos.update(mouse.get_pos())
@@ -118,8 +119,6 @@ while True:
 
     draw.aaline(WIN, Coutline, (font_width*linesqrt10, 0), (font_width*linesqrt10, HEIGHT))
 
-    display.flip()
 
-    delta = CLOCK.tick(600)/1000
-    if not delta:
-        delta = 1/60
+    display.flip()
+    delta = CLOCK.tick(60)/1000
