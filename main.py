@@ -62,10 +62,11 @@ processor_surface: Surface = Surface(SC_RES)
 processor_surface.fill(Cbg)
 text_surface: Surface
 processor_textbuffer: str = ""
-cell1: List[str] = ["" for i in range(64)]
-decoded: List[str] = []
-excepp: List[str] = []
+cell1: List[str] = ["" for _ in range(64)]
+decoded: List[str] = ["" for _ in range(len(code_textarea.value.split("\n")))]
+excepp: List[str] = ["" for _ in range(len(code_textarea.value.split("\n")))]
 timer: int = 0
+
 display1.convert_alpha()
 
 
