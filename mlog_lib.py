@@ -315,6 +315,8 @@ def mlog_to_python(code: str) -> str:
             return f"{args[1]}.blit(processor_surface, (0, 0))"
         case "printflush":
             return ''
+        case "set":
+            return f"global {args[1]};{args[1]} = {args[2]}"
         case "op":
             match args[1]:
                 case "add":
