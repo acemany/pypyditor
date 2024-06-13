@@ -15,8 +15,8 @@ exec("from mlog_lib import raw2d")  # for made pyflake8 shut up
 font.init()
 
 init()
-WIN: Surface = display.set_mode()
-SC_RES: Vector2 = Vector2(WIN.get_size())
+display1: Surface = display.set_mode()
+SC_RES: Vector2 = Vector2(display1.get_size())
 WIDTH, HEIGHT = SC_RES
 FONT: font.Font = font.SysFont('Monospace', 12, bold=True)
 CLOCK: time.Clock = time.Clock()
@@ -65,10 +65,11 @@ processor_textbuffer: str = ""
 cell1: List[str] = ["" for i in range(64)]
 decoded: List[str] = []
 excepp: List[str] = []
+display1.convert_alpha()
 
 
 while True:
-    WIN.fill(Cbg)
+    display1.fill(Cbg)
 
     mouse_pos.update(mouse.get_pos())
     mouse_pressed = mouse.get_pressed()
@@ -112,7 +113,7 @@ while True:
 
     for j, i in enumerate(processor_textbuffer.split("\n")):
         text_surface = FONT.render(i, 1, (127, 255, 127))
-        WIN.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j)))
+        display1.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j)))
 
     draw.aaline(WIN, Coutline, (font_width*linesqrt10, 0), (font_width*linesqrt10, HEIGHT))
 

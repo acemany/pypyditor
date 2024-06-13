@@ -3,4 +3,4 @@ op mod x ii 176
 op idiv y ii 176
 draw color x y 127 255 0 0
 draw rect x y 1 1 0 0
-drawflush WIN
+drawflush display1
