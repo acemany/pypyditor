@@ -35,7 +35,7 @@ delta: float = 1/60
 mouse_pos: Vector2 = Vector2()
 mouse_pressed: Tuple[bool, bool, bool]
 keys_pressed: Tuple[bool]
-events = Tuple[event.Event]
+events: Tuple[event.Event]
 
 key.set_repeat(200, 100)
 key.start_text_input()
