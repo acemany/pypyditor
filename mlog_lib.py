@@ -269,133 +269,134 @@ def raw2d(seed: int, x: float, y: float):
 
 
 def mlog_to_python(code: str) -> str:
-    i: Tuple[str] = code.split()
-    match i[0]:
+    args: Tuple[str] = code.split()
+
+    match args[0]:
+        case "read":
+            return f"{args[1]} = {args[2]}[{args[3]}]"
+        case "write":
+            return f"{args[2]}[{args[3]}] = {args[1]}"
         case "draw":
-            match i[1]:
+            match args[1]:
                 case "clear":
-                    return f"processor_surface.fill(({int(i[2])}, {int(i[3])}, {int(i[4])}))"
+                    return f"processor_surface.fill(({int(args[2])}, {int(args[3])}, {int(args[4])}))"
                 case "color":
-                    return f"processor_color = ({i[2]}, {i[3]}, {i[4]}, {i[5]})"
+                    return f"processor_color = ({args[2]}, {args[3]}, {args[4]}, {args[5]})"
                 case "col":
-                    return "NotImplemented"
+                    return f"processor_color = ({int(args[1][1:3], base=16)}, {int(args[1][3:5], base=16)}, {int(args[1][5:7], base=16)})"
                 case "stroke":
-                    return f"processor_width = {i[2]}"
+                    return f"processor_width = {args[2]}"
                 case "line":
-                    return f"draw.line(processor_surface, processor_color, ({i[2]}, {i[3]}), ({i[4]}, {i[5]}), processor_width)"
+                    return f"draw.line(processor_surface, processor_color, ({args[2]}, {args[3]}), ({args[4]}, {args[5]}), processor_width)"
                 case "rect":
-                    return f"draw.rect(processor_surface, processor_color, ({i[2]}, {i[3]}, {i[4]}, {i[5]}))"
+                    return f"draw.rect(processor_surface, processor_color, ({args[2]}, {args[3]}, {args[4]}, {args[5]}))"
                 case "lineRect":
-                    return f"draw.rect(processor_surface, processor_color, ({i[2]}, {i[3]}, {i[4]}, {i[5]}), processor_width)"
+                    return f"draw.rect(processor_surface, processor_color, ({args[2]}, {args[3]}, {args[4]}, {args[5]}), processor_width)"
                 case "poly":
-                    return f"draw.polygon(processor_surface, processor_color, [({i[2]}+cos(pi*2/{i[4]}*j+{i[6]})*{i[5]}, {i[3]}+sin(pi*2/{i[4]}*j+{i[6]})*{i[5]}) for j in range({i[4]})])"
+                    return f"draw.polygon(processor_surface, processor_color, [({args[2]}+cos(pi*2/{args[4]}*j+{args[6]})*{args[5]}, {args[3]}+sin(pi*2/{args[4]}*j+{args[6]})*{args[5]}) for j in range({args[4]})])"
                 case "linePoly":
-                    return f"draw.polygon(processor_surface, processor_color, [({i[2]}+cos(pi*2/{i[4]}*j+{i[6]})*{i[5]}, {i[3]}+sin(pi*2/{i[4]}*j+{i[6]})*{i[5]}) for j in range({i[4]})], processor_width)"
+                    return f"draw.polygon(processor_surface, processor_color, [({args[2]}+cos(pi*2/{args[4]}*j+{args[6]})*{args[5]}, {args[3]}+sin(pi*2/{args[4]}*j+{args[6]})*{args[5]}) for j in range({args[4]})], processor_width)"
                 case "triangle":
-                    return f"draw.polygon(processor_surface, processor_color, (({i[2]}, {i[3]}), ({i[4]}, {i[5]}), ({i[6]}, {i[7]})))"
+                    return f"draw.polygon(processor_surface, processor_color, (({args[2]}, {args[3]}), ({args[4]}, {args[5]}), ({args[6]}, {args[7]})))"
                 case "image":
                     return "NotImplemented"
                 case _:
                     return "NotImplemented"
-        case "read":
-            return f"{i[1]} = {i[2]}[{i[3]}]"
-        case "write":
-            return f"{i[2]}[{i[3]}] = {i[1]}"
         case "print":
-            return f"processor_textbuffer += str({i[1]})"
+            return f"processor_textbuffer += str({args[1]})"
         case "drawflush":
-            return f"{i[1]}.blit(processor_surface, (0, 0))"
+            return f"{args[1]}.blit(processor_surface, (0, 0))"
         case "printflush":
             return ''
         case "op":
-            match i[1]:
+            match args[1]:
                 case "add":
-                    opeq = f"{i[3]} + {i[4]}"
+                    opeq = f"{args[3]} + {args[4]}"
                 case "sub":
-                    opeq = f"{i[3]} - {i[4]}"
+                    opeq = f"{args[3]} - {args[4]}"
                 case "mul":
-                    opeq = f"{i[3]} * {i[4]}"
+                    opeq = f"{args[3]} * {args[4]}"
                 case "div":
-                    opeq = f"{i[3]} / {i[4]}"
+                    opeq = f"{args[3]} / {args[4]}"
                 case "idiv":
-                    opeq = f"{i[3]} // {i[4]}"
+                    opeq = f"{args[3]} // {args[4]}"
                 case "mod":
-                    opeq = f"{i[3]} % {i[4]}"
+                    opeq = f"{args[3]} % {args[4]}"
                 case "pow":
-                    opeq = f"{i[3]} ** {i[4]}"
+                    opeq = f"{args[3]} ** {args[4]}"
 
                 case "equal":
-                    opeq = f"abs({i[3]} - {i[4]}) < 0.000001"
+                    opeq = f"abs({args[3]} - {args[4]}) < 0.000001"
                 case "notEqual":
-                    opeq = f"abs({i[3]} - {i[4]}) >= 0.000001"
+                    opeq = f"abs({args[3]} - {args[4]}) >= 0.000001"
                 case "land":
-                    opeq = f"{i[3]} != 0 && {i[4]} != 0"
+                    opeq = f"{args[3]} != 0 && {args[4]} != 0"
                 case "lessThan":
-                    opeq = f"{i[3]} < {i[4]}"
+                    opeq = f"{args[3]} < {args[4]}"
                 case "lessThanEq":
-                    opeq = f"{i[3]} <= {i[4]}"
+                    opeq = f"{args[3]} <= {args[4]}"
                 case "greaterThan":
-                    opeq = f"{i[3]} > {i[4]}"
+                    opeq = f"{args[3]} > {args[4]}"
                 case "greaterThanEq":
-                    opeq = f"{i[3]} >= {i[4]}"
+                    opeq = f"{args[3]} >= {args[4]}"
                 case "strictEqual":
                     "0"
 
                 case "shl":
-                    opeq = f"{i[3]} << {i[4]}"
+                    opeq = f"{args[3]} << {args[4]}"
                 case "shr":
-                    opeq = f"{i[3]} >> {i[4]}"
+                    opeq = f"{args[3]} >> {args[4]}"
                 case "or":
-                    opeq = f"{i[3]} | {i[4]}"
+                    opeq = f"{args[3]} | {args[4]}"
                 case "and":
-                    opeq = f"{i[3]} & {i[4]}"
+                    opeq = f"{args[3]} & {args[4]}"
                 case "xor":
-                    opeq = f"{i[3]} ^ {i[4]}"
+                    opeq = f"{args[3]} ^ {args[4]}"
                 case "not":
-                    opeq = f"~{i[3]}"
+                    opeq = f"~{args[3]}"
 
                 case "max":
-                    opeq = f"max({i[3]}, {i[4]})"
+                    opeq = f"max({args[3]}, {args[4]})"
                 case "min":
-                    opeq = f"min({i[3]}, {i[4]})"
+                    opeq = f"min({args[3]}, {args[4]})"
                 case "angle":
-                    opeq = f"(atan2({i[4]}, {i[3]}) * 180/pi) % 360"
+                    opeq = f"(atan2({args[4]}, {args[3]}) * 180/pi) % 360"
                 case "angleDiff":
-                    opeq = f"min(({i[4]} - {i[3]})%360, ({i[3]} - {i[4]})%360)"
+                    opeq = f"min(({args[4]} - {args[3]})%360, ({args[3]} - {args[4]})%360)"
                 case "len":
-                    opeq = f"abs({i[3]} - {i[4]})"
+                    opeq = f"abs({args[3]} - {args[4]})"
                 case "noise":
-                    opeq = f"raw2d(0, {i[3]}, {i[4]})"
+                    opeq = f"raw2d(0, {args[3]}, {args[4]})"
                 case "abs":
-                    opeq = f"abs({i[3]})"
+                    opeq = f"abs({args[3]})"
                 case "log":
-                    opeq = f"log({i[3]})"
+                    opeq = f"log({args[3]})"
                 case "log10":
-                    opeq = f"log({i[3]}, 10)"
+                    opeq = f"log({args[3]}, 10)"
                 case "floor":
-                    opeq = f"int({i[3]})"
+                    opeq = f"int({args[3]})"
                 case "ceil":
-                    opeq = f"ceil({i[3]})"
+                    opeq = f"ceil({args[3]})"
                 case "sqrt":
-                    opeq = f"{i[3]} ** 0.5"
+                    opeq = f"{args[3]} ** 0.5"
                 case "rand":
-                    opeq = f"random() * {i[3]}"
+                    opeq = f"random() * {args[3]}"
 
                 case "sin":
-                    opeq = f"sin({i[3]} / 180*pi)"
+                    opeq = f"sin({args[3]} / 180*pi)"
                 case "cos":
-                    opeq = f"cos({i[3]} / 180*pi)"
+                    opeq = f"cos({args[3]} / 180*pi)"
                 case "tan":
-                    opeq = f"tan({i[3]} / 180*pi)"
+                    opeq = f"tan({args[3]} / 180*pi)"
 
                 case "asin":
-                    opeq = f"asin({i[3]}) / 180*pi)"
+                    opeq = f"asin({args[3]}) / 180*pi)"
                 case "acos":
-                    opeq = f"acos({i[3]}) / 180*pi)"
+                    opeq = f"acos({args[3]}) / 180*pi)"
                 case "atan":
-                    opeq = f"atan({i[3]}) / 180*pi)"
+                    opeq = f"atan({args[3]}) / 180*pi)"
                 case _:
                     return "NotImplemented"
-            return f"{i[2]} = {opeq}"
+            return f"{args[2]} = {opeq}"
         case _:
             return "NotImplemented"
