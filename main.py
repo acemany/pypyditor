@@ -40,7 +40,7 @@ events = Tuple[event.Event]
 key.set_repeat(200, 100)
 key.start_text_input()
 
-with open(gamedir/"codeexample.mlog", "r") as f:
+with open(gamedir/"codeexample.mlog", "r", encoding="utf-8") as f:
     exec("from pygame import draw")
     code_textarea: TextInputVisualizer = TextInputVisualizer(TextInputManager(f.read(),
                                                                               validator=lambda i: True),
