@@ -7,11 +7,6 @@ exec("""
 from random import random""")  # i hate this linter
 
 
-VRTCS = ((1, 1, 0), (-1, 1, 0), (1, -1, 0), (-1, -1, 0),
-         (1, 0, 1), (-1, 0, 1), (1, 0, -1), (-1, 0, -1),
-         (0, 1, 1), (0, -1, 1), (0, 1, -1), (0, -1, -1))
-
-
 class TextInputManager:
     def __init__(self,
                  initial: str = "",
@@ -259,9 +254,18 @@ def raw2d(seed: int, x: float, y: float):
     t1: float = 0.5 - x1**2 - y1**2
     t2: float = 0.5 - x2**2 - y2**2
 
-    return 70*sum(((0 if t0 < 0 else t0**4 * dot(VRTCS[perm(seed, ii + perm(seed, jj)) % 12],           x0, y0)),
-                   (0 if t1 < 0 else t1**4 * dot(VRTCS[perm(seed, ii + i1 + perm(seed, jj + j1)) % 12], x1, y1)),
-                   (0 if t2 < 0 else t2**4 * dot(VRTCS[perm(seed, ii + 1 + perm(seed, jj + 1)) % 12],   x2, y2))))
+    return 70*sum(((0 if t0 < 0 else t0**4 * dot(((1, 1, 0), (-1, 1, 0), (1, -1, 0), (-1, -1, 0),
+                                                  (1, 0, 1), (-1, 0, 1), (1, 0, -1), (-1, 0, -1),
+                                                  (0, 1, 1), (0, -1, 1), (0, 1, -1), (0, -1, -1)
+                                                  )[perm(seed, ii + perm(seed, jj)) % 12],           x0, y0)),
+                   (0 if t1 < 0 else t1**4 * dot(((1, 1, 0), (-1, 1, 0), (1, -1, 0), (-1, -1, 0),
+                                                  (1, 0, 1), (-1, 0, 1), (1, 0, -1), (-1, 0, -1),
+                                                  (0, 1, 1), (0, -1, 1), (0, 1, -1), (0, -1, -1)
+                                                  )[perm(seed, ii + i1 + perm(seed, jj + j1)) % 12], x1, y1)),
+                   (0 if t2 < 0 else t2**4 * dot(((1, 1, 0), (-1, 1, 0), (1, -1, 0), (-1, -1, 0),
+                                                  (1, 0, 1), (-1, 0, 1), (1, 0, -1), (-1, 0, -1),
+                                                  (0, 1, 1), (0, -1, 1), (0, 1, -1), (0, -1, -1)
+                                                  )[perm(seed, ii + 1 + perm(seed, jj + 1)) % 12],   x2, y2))))
 
 
 def mlog_to_python(code: str) -> str:
