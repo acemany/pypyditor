@@ -55,7 +55,7 @@ def queuit() -> None:
     exit()
 
 
-linesqrt10 = ceil(log10(len(code_textarea.value.split("\n"))+1))
+linelog10: int = ceil(log10(len(code_textarea.value.split("\n"))+1))
 processor_width: int = 1
 processor_color: Color = (0, 0, 0)
 processor_surface: Surface = Surface(SC_RES)
@@ -143,7 +143,7 @@ while True:
         text_surface = FONT.render(i, 1, (127, 255, 127))
         display1.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j)))
 
-    draw.aaline(WIN, Coutline, (font_width*linesqrt10, 0), (font_width*linesqrt10, HEIGHT))
+    draw.aaline(display1, Coutline, (font_width*linelog10, 0), (font_width*linelog10, HEIGHT))
 
 
     display.flip()
