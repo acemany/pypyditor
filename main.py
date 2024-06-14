@@ -7,9 +7,12 @@ from pygame import (display, draw, event, font, key, mouse, time,
 from typing import List, Tuple
 from math import ceil, log10
 from pathlib import Path
-
 from sys import exit
-exec("from mlog_lib import raw2d")  # for made pyflake8 shut up
+
+exec("""
+from random import random
+from mlog_lib import raw2d
+from time import sleep""")  # for made pyflake8 shut up
 
 
 font.init()

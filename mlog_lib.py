@@ -3,8 +3,6 @@ from pygame import (event, font, time,
                     KEYDOWN)
 from typing import Callable, List, Tuple
 from functools import cache
-exec("""
-from random import random""")  # i hate this linter
 
 
 class TextInputManager:
@@ -409,5 +407,15 @@ def mlog_to_python(code: str) -> str:
                 case _:
                     return "NotImplemented"
             return f"{args[2]} = {opeq}"
+
+        case "wait":
+            return f"sleep({args[1]})"
+        case "stop":
+            return "1/0"
+        case "end":
+            return "processor_counter = 0"
+        case "jump":
+            return f"processor_counter = {args[1]}"
+
         case _:
             return "NotImplemented"
