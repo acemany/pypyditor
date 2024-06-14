@@ -216,8 +216,8 @@ def dot(g: Tuple[int], x: float, y: float):
     return g[0] * x + g[1] * y
 
 
-@cache
 def perm(seed: int, x: int) -> int:
+    "like hash"
     x = ((x//0xffff) ^ x)*0x45d9f3b
     x = ((x//0xffff) ^ x)*(0x45d9f3b+seed)
     return ((x//0xffff) ^ x) & 0xff
