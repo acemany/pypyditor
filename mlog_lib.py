@@ -315,7 +315,8 @@ def mlog_to_python(code: str) -> str:
         case "drawflush":
             return f"{args[1]}.blit(processor_surface, (0, 0))"
         case "printflush":
-            return ''
+            return ''  # TODO not to do nothing
+
         case "set":
             return f"global {args[1]};{args[1]} = {args[2]}"
         case "op":
