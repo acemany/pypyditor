@@ -220,13 +220,13 @@ def dot(g: Tuple[int], x: float, y: float):
 
 
 @cache
-def perm(seed: int, x: int):
+def perm(seed: int, x: int) -> int:
     x = ((x//0xffff) ^ x)*0x45d9f3b
     x = ((x//0xffff) ^ x)*(0x45d9f3b+seed)
     return ((x//0xffff) ^ x) & 0xff
 
 
-def raw2d(seed: int, x: float, y: float):
+def raw2d(seed: int, x: float, y: float) -> float:
     "idk how i translated this from java but it works"
 
     s: float = (x + y) * 0.3660254037844386
@@ -311,6 +311,7 @@ def mlog_to_python(code: str) -> str:
                     return "NotImplemented"
         case "print":
             return f"processor_textbuffer += str({args[1]})"
+
         case "drawflush":
             return f"{args[1]}.blit(processor_surface, (0, 0))"
         case "printflush":
