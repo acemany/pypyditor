@@ -137,7 +137,7 @@ while True:
             draw.rect(display1, Cerror, (WIDTH-font_width, j*font_height, *font_size))
             draw.rect(display1, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4), (0, j*font_height, WIDTH-font_width, font_height))
 
-        display1.blit(FONT.render(f"{j+1}", 1, Ctxt2), (0, font_height*j))
+        display1.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j))
 
         display1.blit(FONT.render(i, 1, Ctxt), (font_width*(linelog10+0.5), font_height*j))
 
