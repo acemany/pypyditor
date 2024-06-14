@@ -1,4 +1,4 @@
-from mlog_lib import mlog_to_python, TextInputManager, TextInputVisualizer
+from mlog_lib import mlog_to_python, get_command_color, TextInputManager, TextInputVisualizer
 from pygame import (display, draw, event, font, key, mouse, time,
                     Surface, Vector2, Color,
                     init, quit as squit,
@@ -18,8 +18,8 @@ from time import sleep""")  # for made pyflake8 shut up
 font.init()
 
 init()
-display1: Surface = display.set_mode()
-SC_RES: Vector2 = Vector2(display1.get_size())
+WIN: Surface = display.set_mode()
+SC_RES: Vector2 = Vector2(WIN.get_size())
 WIDTH, HEIGHT = SC_RES
 FONT: font.Font = font.SysFont('Monospace', 12, bold=True)
 CLOCK: time.Clock = time.Clock()
@@ -62,22 +62,23 @@ linelog10: int = ceil(log10(len(code_textarea.value.split("\n"))+1))
 processor_width: int = 1
 processor_color: Color = (0, 0, 0)
 processor_surface: Surface = Surface((176, 176))
+processor_speed: float = 1/120
 processor_counter: int = 0
-text_surface: Surface
 processor_textbuffer: str = ""
+
+display1: Surface = Surface(SC_RES)
+text_surface: Surface
 cell1: List[str] = ["" for _ in range(64)]
 decoded: List[str] = ["" for _ in range(len(code_textarea.value.split("\n")))]
 excepp: List[str] = ["" for _ in range(len(code_textarea.value.split("\n")))]
 timer: int = 0
 
-display1.convert_alpha()
-processor_surface.convert_alpha()
 processor_surface.fill(Cbg)
 
 
 while True:
     timer += delta
-    display1.fill(Cbg)
+    WIN.fill(Cbg)
 
     mouse_pos.update(mouse.get_pos())
     mouse_pressed = mouse.get_pressed()
@@ -113,6 +114,8 @@ while True:
             if not raw_line:
                 decoded[processor_counter] = ""
                 excepp[processor_counter] = ""
+                processor_counter += 1
+                timer -= processor_speed
                 continue
             k = raw_line.split()
             if k[0] == "op" and k[2] not in globals():
@@ -131,27 +134,27 @@ while True:
         print(decoded, excepp, inputt)
         raise IndexError("These lists not match? Strange...")
 
+    WIN.blit(display1, (0, 0))
+
     for j, i in enumerate(f"{code_textarea.manager.left}|{code_textarea.manager.right}".split("\n")):
         if excepp[j]:
-            draw.rect(display1, Cerror, (WIDTH-font_width, j*font_height, *font_size))
-            draw.rect(display1, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4), (0, j*font_height, WIDTH-font_width, font_height))
+            draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height, *font_size))
+            draw.rect(WIN, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4), (0, j*font_height, WIDTH-font_width, font_height))
 
-        display1.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j))
-
-        display1.blit(FONT.render(i, 1, Ctxt), (font_width*(linelog10+0.5), font_height*j))
+        WIN.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j))
+        WIN.blit(FONT.render(i, 1, get_command_color(f"{i.replace('|', '')} _".split(maxsplit=1)[0])), (font_width*(linelog10+0.5), font_height*j))
 
         if mouse_pos.x >= WIDTH-font_width:
-            display1.blit(FONT.render(decoded[j], 1, Ctxt2), (WIDTH-FONT.size(decoded[j])[0]-font_width, font_height*j))
-
-            display1.blit(FONT.render(excepp[j], 1, Cerror), (WIDTH-FONT.size(excepp[j])[0]-font_width, font_height*j))
+            WIN.blit(FONT.render(decoded[j], 1, Ctxt2), (WIDTH-FONT.size(decoded[j])[0]-font_width, font_height*j))
+            WIN.blit(FONT.render(excepp[j], 1, Cerror), (WIDTH-FONT.size(excepp[j])[0]-font_width, font_height*j))
 
     for j, i in enumerate(processor_textbuffer.split("\n")):
         text_surface = FONT.render(i, 1, (127, 255, 127))
-        display1.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j)))
+        WIN.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j)))
 
-    draw.aaline(display1, Coutline, (font_width*linelog10, 0), (font_width*linelog10, HEIGHT))
+    draw.aaline(WIN, Coutline, (font_width*linelog10, 0), (font_width*linelog10, HEIGHT))
 
-    display1.blits([(FONT.render(var, 1, Ctxt2), (WIDTH/2, font_height*(y+1)))
+    WIN.blits([(FONT.render(var, 1, Ctxt2), (WIDTH/2, font_height*(y+1)))
                     for y, var in enumerate((f"{i[0]} = {i[1]!r}"
                                              for i in globals().items()
                                              if i[0] not in ("__name__", "__doc__", "__package__", "__loader__", "__spec__", "__annotations__", "__builtins__", "__file__", "__cached__",
@@ -159,4 +162,4 @@ while True:
                                                              "Vector2", "Color", "init", "squit", "K_ESCAPE", "QUIT", "List", "Tuple", "ceil", "log10", "Path", "exit", "raw2d")))])
 
     display.flip()
-    delta = CLOCK.tick(60)/1000
+    delta = CLOCK.tick()/1000
