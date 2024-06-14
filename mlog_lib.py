@@ -1,8 +1,7 @@
+from typing import Callable, List, Tuple
 from pygame import (event, font, time,
                     Rect, Surface,
                     KEYDOWN)
-from typing import Callable, List, Tuple
-from functools import cache
 
 
 class TextInputManager:
