@@ -77,7 +77,7 @@ processor_surface.fill(Cbg)
 
 
 while True:
-    timer += 1/delta
+    timer += delta
     display1.fill(Cbg)
 
     mouse_pos.update(mouse.get_pos())
@@ -107,7 +107,6 @@ while True:
 
     while timer >= processor_speed:
         processor_textbuffer = f"{linelog10}   "
-        processor_counter += 1
         processor_counter %= inputt_len
 
         raw_line: str = inputt[processor_counter]
@@ -120,12 +119,13 @@ while True:
             if k[0] == "op" and k[2] not in globals():
                 exec(f"global {k[2]};{k[2]} = 0")
             _ = mlog_to_python(raw_line)
-            exec(_)
             decoded[processor_counter] = _
             excepp[processor_counter] = ""
+            exec(_)
         except Exception as e:
             decoded[processor_counter] = ""
             excepp[processor_counter] = f"{e!s}"
+        processor_counter += 1
         timer -= processor_speed
 
     if len(decoded) != len(excepp) != inputt_len:
