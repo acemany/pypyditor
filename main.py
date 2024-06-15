@@ -33,6 +33,7 @@ Ctxt: Color = Color(207, 212, 218)
 Ctxt2: Color = Color(164, 161, 171)
 Coutline: Color = Color(255, 255, 255)
 Cerror: Color = Color(255, 15, 15)
+Cwarn: Color = Color(240, 255, 0)
 
 delta: float = 1/60
 mouse_pos: Vector2 = Vector2()
@@ -145,6 +146,9 @@ while True:
         if excepp[j]:
             draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height, *font_size))
             draw.rect(WIN, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4), (0, j*font_height, WIDTH-font_width, font_height))
+        if decoded[j] == trans_m_to_p("NotImplemented"):
+            draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height, *font_size))
+            draw.rect(WIN, (Cwarn[0]/4, Cwarn[1]/4, Cwarn[2]/4), (0, j*font_height, WIDTH-font_width, font_height))
 
         WIN.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j))
         WIN.blit(FONT.render(i, 1, get_command_color(f"{i} _".split(maxsplit=1)[0])), (font_width*(linelog10+0.5), font_height*j))
