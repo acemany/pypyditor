@@ -2,8 +2,8 @@ from mlog_lib import mlog_to_python, get_command_color, TextInputManager, TextIn
 from pygame import (display, draw, event, font, key, mouse, time,
                     Surface, Vector2, Color,
                     init, quit as squit,
-                    K_ESCAPE,
-                    QUIT)
+                    FINGERDOWN, QUIT,
+                    K_ESCAPE)
 from typing import List, Tuple
 from math import ceil, log10
 from pathlib import Path
@@ -88,6 +88,9 @@ while True:
     for e in events:
         if e.type == QUIT or keys_pressed[K_ESCAPE]:
             queuit()
+        elif e.type == FINGERDOWN:
+            key.start_text_input()
+
 
     code_textarea.update(events)
 
