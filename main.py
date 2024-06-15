@@ -150,7 +150,7 @@ while True:
         WIN.blit(FONT.render(i, 1, get_command_color(f"{i} _".split(maxsplit=1)[0])), (font_width*(linelog10+0.5), font_height*j))
 
         if mouse_pos.x >= WIDTH-font_width:
-            WIN.blit(FONT.render(str(decoded[j]), 1, Ctxt2), (WIDTH-FONT.size(str(decoded[j]))[0]-font_width, font_height*j))
+            WIN.blit(FONT.render(f"{decoded[j]!r}", 1, Ctxt2), (WIDTH-FONT.size(f"{decoded[j]!r}")[0]-font_width, font_height*j))
             WIN.blit(FONT.render(excepp[j], 1, Cerror), (WIDTH-FONT.size(excepp[j])[0]-font_width, font_height*j))
 
     for j, i in enumerate(processor_textbuffer.split("\n")):
