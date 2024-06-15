@@ -448,7 +448,26 @@ def mlog_to_python(code: str) -> str:
         case "end":
             return "processor_counter = 0"
         case "jump":
-            return f"processor_counter = {args[1]}-1"
+            match args[2]:
+                case "equal":
+                    cond = f"{args[3]} == {args[4]}"
+                case "notEqual":
+                    cond = f"{args[3]} != {args[4]}"
+                case "lessThan":
+                    cond = f"{args[3]} < {args[4]}"
+                case "lessThanEq":
+                    cond = f"{args[3]} <= {args[4]}"
+                case "greaterThan":
+                    cond = f"{args[3]} > {args[4]}"
+                case "greaterThanEq":
+                    cond = f"{args[3]} >= {args[4]}"
+                case "strictEqual":
+                    cond = "False"
+                case "always":
+                    cond = "True"
+                case _:
+                    return "NotImplemented"
+            return f"processor_counter = {args[1]}-1 if {cond} else processor_counter"
 
         case _:
             return "NotImplemented"
