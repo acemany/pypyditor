@@ -280,6 +280,7 @@ def get_command_color(word: str) -> str:
     flush - #d4816b\n
     operations - #877bad\n
     system - #6bb2b2"""
+
     if word in ("read", "write", "draw", "print"):
         return "#a08a8a"
     elif word in ("drawflush", "printflush"):
@@ -447,7 +448,7 @@ def mlog_to_python(code: str) -> str:
         case "end":
             return "processor_counter = 0"
         case "jump":
-            return f"processor_counter = {args[1]}"
+            return f"processor_counter = {args[1]}-1"
 
         case _:
             return "NotImplemented"
