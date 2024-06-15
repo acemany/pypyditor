@@ -66,6 +66,7 @@ processor_surface: Surface = Surface((176, 176))
 processor_speed: float = 1/120
 processor_counter: int = 0
 processor_textbuffer: str = ""
+processor_cursor_pos: Tuple[int, int] = [0, 0]
 
 display1: Surface = Surface(SC_RES)
 text_surface: Surface
