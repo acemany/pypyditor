@@ -1,4 +1,4 @@
-from mlog_lib import mlog_to_python, get_command_color, TextInputManager, TextInputVisualizer
+from mlog_lib import trans_m_to_p, get_command_color, TextInputManager, TextInputVisualizer
 from pygame import (display, draw, event, font, key, mouse, time,
                     Surface, Vector2, Color,
                     init, quit as squit,
@@ -125,7 +125,7 @@ while True:
             k = raw_line.split()
             if k[0] == "op" and k[2] not in globals():
                 exec(f"global {k[2]};{k[2]} = 0")
-            _ = mlog_to_python(raw_line)
+            _ = trans_m_to_p(raw_line)
             decoded[processor_counter] = _
             excepp[processor_counter] = ""
             exec(_)

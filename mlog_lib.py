@@ -2,6 +2,7 @@ from typing import Callable, List, Tuple
 from pygame import (event, font, time,
                     Rect, Surface,
                     KEYDOWN)
+from functools import cache
 
 
 class TextInputManager:
@@ -210,6 +211,11 @@ class TextInputVisualizer:
             cursor_y = self.font_object.size(str_left_of_cursor)[0]
             cursor_rect = Rect(cursor_y, 0, self._cursor_width, self.font_object.get_height())
             self._surface.fill(self._cursor_color, cursor_rect)
+
+
+@cache
+def trans_m_to_p(a: str):
+    return compile(mlog_to_python(a), '', 'exec')
 
 
 def dot(g: Tuple[int], x: float, y: float):
