@@ -320,7 +320,7 @@ def mlog_to_python(code: str) -> str:
                 case "color":
                     return f"processor_color = ({args[2]}, {args[3]}, {args[4]}, {args[5]})"
                 case "col":
-                    return f"processor_color = ({int(args[1][1:3], base=16)}, {int(args[1][3:5], base=16)}, {int(args[1][5:7], base=16)})"
+                    return f"processor_color = ({int(args[2][1:3], base=16)}, {int(args[2][3:5], base=16)}, {int(args[2][5:7], base=16)})"
                 case "stroke":
                     return f"processor_width = {args[2]}"
                 case "line":
