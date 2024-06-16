@@ -1,8 +1,8 @@
 from mlog_lib import trans_m_to_p, get_command_color, TextInputManager, TextInputVisualizer
-from pygame import (display, draw, event, font, key, mouse, time,
+from pygame import (display, draw, event, font, key, mouse, time, transform,
+                    FINGERDOWN, QUIT, BUTTON_WHEELDOWN, BUTTON_WHEELUP, MOUSEBUTTONDOWN,
                     Surface, Vector2, Color,
                     init, quit as squit,
-                    FINGERDOWN, QUIT,
                     K_ESCAPE)
 from typing import List, Tuple
 from math import ceil, log10
@@ -68,6 +68,7 @@ processor_speed: float = 1/120
 processor_counter: int = 0
 processor_textbuffer: str = ""
 processor_cursor_pos: List[int, int] = [0, 0]
+processor_vertical_offset: float = 0
 
 display1: Surface = Surface(processor_surface.size)
 text_surface: Surface
@@ -96,6 +97,12 @@ while True:
             queuit()
         elif e.type == FINGERDOWN:
             key.start_text_input()
+        elif e.type == MOUSEBUTTONDOWN:
+            if e.button == BUTTON_WHEELDOWN and processor_vertical_offset > -font_height*len():
+                processor_vertical_offset -= font_height
+            elif e.button == BUTTON_WHEELUP and processor_vertical_offset < 0:
+                processor_vertical_offset += font_height
+                print(font_height)
 
     code_textarea.update(events)
     processor_cursor_pos[1] = len(code_textarea.manager.left.split("\n"))-1
@@ -144,27 +151,33 @@ while True:
 
     for j, i in enumerate(code_textarea.manager.value.split("\n")):
         if excepp[j]:
-            draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height, *font_size))
-            draw.rect(WIN, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4), (0, j*font_height, WIDTH-font_width, font_height))
+            draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height+processor_vertical_offset, *font_size))
+            draw.rect(WIN, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4),
+                      (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
         if decoded[j] == trans_m_to_p("NotImplemented"):
-            draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height, *font_size))
-            draw.rect(WIN, (Cwarn[0]/4, Cwarn[1]/4, Cwarn[2]/4), (0, j*font_height, WIDTH-font_width, font_height))
+            draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height+processor_vertical_offset, *font_size))
+            draw.rect(WIN, (Cwarn[0]/4, Cwarn[1]/4, Cwarn[2]/4),
+                      (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
 
-        WIN.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j))
-        WIN.blit(FONT.render(i, 1, get_command_color(f"{i} _".split(maxsplit=1)[0])), (font_width*(linelog10+0.5), font_height*j))
+        WIN.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j+processor_vertical_offset))
+        WIN.blit(FONT.render(i, 1, get_command_color(f"{i} _".split(maxsplit=1)[0])),
+                 (font_width*(linelog10+0.5), font_height*j+processor_vertical_offset))
 
         if mouse_pos.x >= WIDTH-font_width:
-            WIN.blit(FONT.render(f"{decoded[j]!r}", 1, Ctxt2), (WIDTH-FONT.size(f"{decoded[j]!r}")[0]-font_width, font_height*j))
-            WIN.blit(FONT.render(excepp[j], 1, Cerror), (WIDTH-FONT.size(excepp[j])[0]-font_width, font_height*j))
+            WIN.blit(FONT.render(f"{decoded[j]!r}", 1, Ctxt2),
+                     (WIDTH-FONT.size(f"{decoded[j]!r}")[0]-font_width, font_height*j+processor_vertical_offset))
+            WIN.blit(FONT.render(excepp[j], 1, Cerror),
+                     (WIDTH-FONT.size(excepp[j])[0]-font_width, font_height*j+processor_vertical_offset))
 
     for j, i in enumerate(processor_textbuffer.split("\n")):
         text_surface = FONT.render(i, 1, (127, 255, 127))
-        WIN.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j)))
+        WIN.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j+processor_vertical_offset)))
 
     draw.aaline(WIN, Coutline, (font_width*linelog10, 0), (font_width*linelog10, HEIGHT))
     if code_textarea._cursor_visible:
-        draw.rect(WIN, (255, 255, 255), (processor_cursor_pos[0]+(linelog10+0.5)*font_width, (processor_cursor_pos[1])*font_height,
-                                         code_textarea._cursor_width, font_height))
+        draw.rect(WIN, (255, 255, 255),
+                  (processor_cursor_pos[0]+(linelog10+0.5)*font_width, (processor_cursor_pos[1])*font_height+processor_vertical_offset,
+                   code_textarea._cursor_width, font_height))
 
     WIN.blits([(FONT.render(var, 1, Ctxt2), (WIDTH/2, font_height*(y+1)))
                for y, var in enumerate((f"{i[0]} = {i[1]!r}"
