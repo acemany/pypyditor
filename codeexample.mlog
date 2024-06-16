@@ -1,19 +1,18 @@
 draw col %ffffff 0 0 0 0 0
-write 2 cell1 0
 read input cell1 0
 draw stroke 2 6 6 170 0 0
 drawflush display1
 draw clear 0 0 0 0 0 0
-jump 17 equal input 0
-jump 24 equal input 1
-jump 27 equal input 2
-jump 31 equal input 3
-jump 7 equal input 4
-jump 7 equal input 5
-jump 7 equal input 6
-jump 7 equal input 7
-jump 7 equal input 8
-jump 7 equal input 9
+jump 16 equal input 0
+jump 23 equal input 1
+jump 26 equal input 2
+jump 30 equal input 3
+jump 6 equal input 4
+jump 6 equal input 5
+jump 6 equal input 6
+jump 6 equal input 7
+jump 6 equal input 8
+jump 6 equal input 9
 jump 1 always 0 0
 draw line 6 6 42 6 0 0
 draw line 42 6 42 42 0 0
