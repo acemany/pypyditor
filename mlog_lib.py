@@ -1,70 +1,72 @@
-from typing import Callable, List, Tuple
 from pygame import (event, font, time,
                     Rect, Surface,
                     KEYDOWN)
+from typing import List, Tuple
 from functools import cache
 
 
 class TextInputManager:
     def __init__(self,
-                 initial: str = "",
-                 validator: Callable[[str], bool] = lambda x: True):
-
-        self.left = initial  # string to the left of the cursor
-        self.right = ""  # string to the right of the cursor
-        self.validator = validator
+                 initial: List[str] = [""]):
+        self.value: List[str] = initial  # string to the left of the cursor
+        self.cursor_pos: List[int] = [len(self.value[-1]), len(self.value)-1]
 
     @property
-    def value(self):
-        return self.left + self.right
+    def left(self) -> List[str]:
+        return [*self.value[:self.cursor_pos[1]], self.value[self.cursor_pos[1]][:self.cursor_pos[0]]]
 
-    @value.setter
-    def value(self, value):
-        cursor_pos = self.cursor_pos
-        self.left = value[:cursor_pos]
-        self.right = value[cursor_pos:]
+    @left.setter
+    def left(self, a) -> List[str]:
+        self.value[:self.cursor_pos[1]]
+        self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
 
     @property
-    def cursor_pos(self):
-        return len(self.left)
+    def right(self) -> List[str]:
+        return [self.value[self.cursor_pos[1]][self.cursor_pos[0]:], *self.value[self.cursor_pos[1]:]]
 
-    @cursor_pos.setter
-    def cursor_pos(self, value):
-        complete = self.value
-        self.left = complete[:value]
-        self.right = complete[value:]
+    @right.setter
+    def right(self, a) -> List[str]:
+        self.value[:self.cursor_pos[1]]
+        self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
 
-    def update(self, events: List[event.Event]):
+    def update(self, events: List[event.Event]) -> None:
         for e in events:
             if e.type == KEYDOWN:
-                v_before = self.value
-                c_before = self.cursor_pos
                 self._process_keydown(e)
-                if not self.validator(self.value):
-                    self.value = v_before
-                    self.cursor_pos = c_before
 
-    def _process_keydown(self, e: event.Event):
+    def _process_keydown(self, e: event.Event) -> None:
         match e.key:
-            case 27:  # K_ESCAPE
+            case 27:          # K_ESCAPE
                 pass
-            case 127:  # K_DELETE
+            case 127:         # K_DELETE
                 self.right = self.right[1:]
-            case 8:  # K_BACKSPACE
+            case 8:           # K_BACKSPACE
                 self.left = self.left[:-1]
             case 1073741904:  # K_LEFT
-                self.cursor_pos -= 1 if self.cursor_pos > 0 else 0
+                if self.cursor_pos[0] > 0:
+                    self.cursor_pos[0] -= 1
+                elif self.cursor_pos[1] != 0:
+                    self.cursor_pos[1] -= 1
+                    self.cursor_pos[0] = len(self.value[self.cursor_pos[1]])
             case 1073741903:  # K_RIGHT
-                self.cursor_pos += 1
+                if self.cursor_pos[0] < len(self.value[self.cursor_pos[1]]):
+                    self.cursor_pos[0] += 1
+                elif self.cursor_pos[1] != len(self.value)-1:
+                    self.cursor_pos[1] += 1
+                    self.cursor_pos[0] = 0
             case 1073741906:  # K_UP
-                self.cursor_pos -= 10 if self.cursor_pos > 9 else self.cursor_pos
+                if self.cursor_pos[1] == 0:
+                    return
+                self.cursor_pos[1] -= 1
             case 1073741905:  # K_DOWN
-                self.cursor_pos += 10
+                if self.cursor_pos[1] == len(self.value)-1:
+                    return
+                self.cursor_pos[1] += 1
             case 1073741901:  # K_END
-                self.cursor_pos = len(self.value)
+                self.cursor_pos = [len(self.value[-1]), len(self.value)-1]
             case 1073741898:  # K_HOME
-                self.cursor_pos = 0
-            case 13:  # K_RETURN
+                self.cursor_pos = [0, 0]
+            case 13:          # K_RETURN
                 self.left += "\n"
             case _:
                 self.left += e.unicode

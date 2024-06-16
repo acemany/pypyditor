@@ -46,8 +46,7 @@ key.start_text_input()
 
 with open(gamedir/"codeexample.mlog", "r", encoding="utf-8") as f:
     exec("from pygame import draw")
-    code_textarea: TextInputVisualizer = TextInputVisualizer(TextInputManager(f.read(),
-                                                                              validator=lambda i: True),
+    code_textarea: TextInputVisualizer = TextInputVisualizer(TextInputManager(f.read().splitlines()),
                                                              FONT, True, Ctxt,
                                                              500, 2)
 del f
@@ -55,12 +54,12 @@ del f
 
 def queuit() -> None:
     with open(gamedir/"codeexample.mlog", "w", encoding="utf-8") as f:
-        f.write(str(code_textarea.value))
+        f.write("\n".join(code_textarea.value))
     squit()
     exit()
 
 
-linelog10: int = ceil(log10(len(code_textarea.value.split("\n"))+1))
+linelog10: int = ceil(log10(len(code_textarea.value)+1))
 processor_width: int = 1
 processor_color: Color = (0, 0, 0)
 processor_surface: Surface = Surface((176, 176))
@@ -73,8 +72,8 @@ processor_vertical_offset: float = 0
 display1: Surface = Surface(processor_surface.size)
 text_surface: Surface
 cell1: List[str] = ["" for _ in range(64)]
-decoded: List[str] = ["" for _ in range(len(code_textarea.value.split("\n")))]
-excepp: List[str] = ["" for _ in range(len(code_textarea.value.split("\n")))]
+decoded: List[str] = ["" for _ in range(len(code_textarea.value))]
+excepp: List[str] = ["" for _ in range(len(code_textarea.value))]
 timer: int = 0
 
 processor_surface.fill(Cbg)
@@ -89,7 +88,7 @@ while True:
     keys_pressed = key.get_pressed()
     events = event.get()
 
-    inputt: List[str] = code_textarea.value.split("\n")
+    inputt: List[str] = code_textarea.value
     inputt_len: int = len(inputt)
 
     for e in events:
@@ -98,15 +97,14 @@ while True:
         elif e.type == FINGERDOWN:
             key.start_text_input()
         elif e.type == MOUSEBUTTONDOWN:
-            if e.button == BUTTON_WHEELDOWN and processor_vertical_offset > -font_height*len():
+            if e.button == BUTTON_WHEELDOWN and processor_vertical_offset > -font_height*(len(code_textarea.value)-1):
                 processor_vertical_offset -= font_height
             elif e.button == BUTTON_WHEELUP and processor_vertical_offset < 0:
                 processor_vertical_offset += font_height
-                print(font_height)
 
     code_textarea.update(events)
-    processor_cursor_pos[1] = len(code_textarea.manager.left.split("\n"))-1
-    processor_cursor_pos[0] = FONT.size(code_textarea.manager.left.split("\n")[-1])[0]
+    processor_cursor_pos[0] = FONT.size(code_textarea.manager.left[-1])[0]/font_width
+    processor_cursor_pos[1] = code_textarea.manager.cursor_pos[1]
 
     while len(decoded) != inputt_len:
         if len(decoded) < inputt_len:
@@ -147,7 +145,7 @@ while True:
 
     WIN.blit(transform.flip(display1, False, True), (0, 0))
 
-    for j, i in enumerate(code_textarea.manager.value.split("\n")):
+    for j, i in enumerate(code_textarea.manager.value):
         if excepp[j]:
             draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height+processor_vertical_offset, *font_size))
             draw.rect(WIN, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4),
@@ -167,14 +165,14 @@ while True:
             WIN.blit(FONT.render(excepp[j], 1, Cerror),
                      (WIDTH-FONT.size(excepp[j])[0]-font_width, font_height*j+processor_vertical_offset))
 
-    for j, i in enumerate(processor_textbuffer.split("\n")):
+    for j, i in enumerate(processor_textbuffer):
         text_surface = FONT.render(i, 1, (127, 255, 127))
         WIN.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j+processor_vertical_offset)))
 
     draw.aaline(WIN, Coutline, (font_width*linelog10, 0), (font_width*linelog10, HEIGHT))
     if code_textarea._cursor_visible:
         draw.rect(WIN, (255, 255, 255),
-                  (processor_cursor_pos[0]+(linelog10+0.5)*font_width, (processor_cursor_pos[1])*font_height+processor_vertical_offset,
+                  ((processor_cursor_pos[0]+(linelog10+0.5))*font_width, (processor_cursor_pos[1])*font_height+processor_vertical_offset,
                    code_textarea._cursor_width, font_height))
 
     WIN.blits([(FONT.render(var, 1, Ctxt2), (WIDTH/2, font_height*(y+1)))
