@@ -120,28 +120,26 @@ while True:
         linelog10 = ceil(log10(inputt_len+1))
 
     while timer >= processor_speed:
+        timer -= processor_speed
         processor_counter %= inputt_len
 
         raw_line: str = inputt[processor_counter]
         try:
-            if not raw_line:
-                decoded[processor_counter] = ""
-                excepp[processor_counter] = ""
+            excepp[processor_counter] = ""
+            decoded[processor_counter] = ""
+            if not raw_line:  # if empty
                 processor_counter += 1
-                timer -= processor_speed
                 continue
             k = raw_line.split()
             if k[0] == "op" and k[2] not in globals():
                 exec(f"global {k[2]};{k[2]} = 0")
             _ = trans_m_to_p(raw_line)
             decoded[processor_counter] = _
-            excepp[processor_counter] = ""
             exec(_)
         except Exception as e:
             decoded[processor_counter] = ""
             excepp[processor_counter] = f"{e!s}"
         processor_counter += 1
-        timer -= processor_speed
 
     if len(decoded) != len(excepp) != inputt_len:
         print(decoded, excepp, inputt)
