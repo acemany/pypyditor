@@ -69,7 +69,7 @@ processor_counter: int = 0
 processor_textbuffer: str = ""
 processor_cursor_pos: List[int, int] = [0, 0]
 
-display1: Surface = Surface(SC_RES)
+display1: Surface = Surface(processor_surface.size)
 text_surface: Surface
 cell1: List[str] = ["" for _ in range(64)]
 decoded: List[str] = ["" for _ in range(len(code_textarea.value.split("\n")))]
