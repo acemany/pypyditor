@@ -145,7 +145,7 @@ while True:
         print(decoded, excepp, inputt)
         raise IndexError("These lists not match? Strange...")
 
-    WIN.blit(display1, (0, 0))
+    WIN.blit(transform.flip(display1, False, True), (0, 0))
 
     for j, i in enumerate(code_textarea.manager.value.split("\n")):
         if excepp[j]:
