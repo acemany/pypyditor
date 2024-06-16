@@ -67,7 +67,7 @@ processor_surface: Surface = Surface((176, 176))
 processor_speed: float = 1/120
 processor_counter: int = 0
 processor_textbuffer: str = ""
-processor_cursor_pos: Tuple[int, int] = [0, 0]
+processor_cursor_pos: List[int, int] = [0, 0]
 
 display1: Surface = Surface(SC_RES)
 text_surface: Surface
@@ -88,6 +88,9 @@ while True:
     keys_pressed = key.get_pressed()
     events = event.get()
 
+    inputt: List[str] = code_textarea.value.split("\n")
+    inputt_len: int = len(inputt)
+
     for e in events:
         if e.type == QUIT or keys_pressed[K_ESCAPE]:
             queuit()
@@ -97,9 +100,6 @@ while True:
     code_textarea.update(events)
     processor_cursor_pos[1] = len(code_textarea.manager.left.split("\n"))-1
     processor_cursor_pos[0] = FONT.size(code_textarea.manager.left.split("\n")[-1])[0]
-
-    inputt = code_textarea.value.split("\n")
-    inputt_len: int = len(inputt)
 
     while len(decoded) != inputt_len:
         if len(decoded) < inputt_len:
