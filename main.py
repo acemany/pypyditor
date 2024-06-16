@@ -66,7 +66,7 @@ processor_surface: Surface = Surface((176, 176))
 processor_speed: float = 1/120
 processor_counter: int = 0
 processor_textbuffer: str = ""
-processor_cursor_pos: List[int, int] = [0, 0]
+processor_cursor_pos: List[int] = [0, 0]
 processor_vertical_offset: float = 0
 
 display1: Surface = Surface(processor_surface.size)
