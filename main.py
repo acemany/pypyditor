@@ -88,8 +88,7 @@ while True:
     keys_pressed = key.get_pressed()
     events = event.get()
 
-    inputt: List[str] = code_textarea.value
-    inputt_len: int = len(inputt)
+    inputt_len: int = len(code_textarea.value)
 
     for e in events:
         if e.type == QUIT or keys_pressed[K_ESCAPE]:
@@ -106,11 +105,11 @@ while True:
     processor_cursor_pos[0] = FONT.size(code_textarea.manager.left[-1])[0]/font_width
     processor_cursor_pos[1] = code_textarea.manager.cursor_pos[1]
 
-    while len(decoded) != inputt_len:
-        if len(decoded) < inputt_len:
+    while len(decoded) != len(code_textarea.value):
+        if len(decoded) < len(code_textarea.value):
             decoded.append("")
             excepp.append("")
-        elif len(decoded) > inputt_len:
+        elif len(decoded) > len(code_textarea.value):
             decoded.pop()
             excepp.pop()
 
@@ -119,9 +118,9 @@ while True:
 
     while timer >= processor_speed:
         timer -= processor_speed
-        processor_counter %= inputt_len
+        processor_counter %= len(code_textarea.value)
 
-        raw_line: str = inputt[processor_counter]
+        raw_line: str = code_textarea.value[processor_counter]
         try:
             excepp[processor_counter] = ""
             decoded[processor_counter] = ""
@@ -140,7 +139,7 @@ while True:
         processor_counter += 1
 
     if len(decoded) != len(excepp) != inputt_len:
-        print(decoded, excepp, inputt)
+        print(decoded, excepp, code_textarea.value)
         raise IndexError("These lists not match? Strange...")
 
     WIN.blit(transform.flip(display1, False, True), (0, 0))
