@@ -1,2 +1,2 @@
 # pypyditor
- Simple python notebook
+ A little more complicated than simple python text editor
