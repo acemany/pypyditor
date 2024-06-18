@@ -49,14 +49,12 @@ class TextInputManager:
                 if self.cursor_pos[0] > 0:
                     self.cursor_pos[0] -= 1
                 elif self.cursor_pos[1] != 0:
-                    self.cursor_pos[1] -= 1
-                    self.cursor_pos[0] = len(self.value[self.cursor_pos[1]])
+                    self.cursor_pos = [len(self.value[self.cursor_pos[1]-1]), self.cursor_pos[1]-1]
             case 1073741903:  # K_RIGHT
                 if self.cursor_pos[0] < len(self.value[self.cursor_pos[1]]):
                     self.cursor_pos[0] += 1
                 elif self.cursor_pos[1] != len(self.value)-1:
-                    self.cursor_pos[1] += 1
-                    self.cursor_pos[0] = 0
+                    self.cursor_pos = [0, self.cursor_pos[1]+1]
             case 1073741906:  # K_UP
                 if self.cursor_pos[1] == 0:
                     return
