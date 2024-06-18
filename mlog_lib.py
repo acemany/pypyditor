@@ -41,10 +41,25 @@ class TextInputManager:
         match e.key:
             case 27:          # K_ESCAPE
                 pass
-            case 127:         # K_DELETE
-                self.right = self.right[1:]
             case 8:           # K_BACKSPACE
-                self.left = self.left[:-1]
+                if self.cursor_pos[0] > 0:
+                    self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]][:-1] +\
+                        self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
+                    self.cursor_pos[0] -= 1
+                elif self.cursor_pos[1] != 0:
+                    right_part: str = self.value[self.cursor_pos[1]]
+                    self.value.pop(self.cursor_pos[1])
+                    next_cursor_pos: List[int] = [len(self.value[self.cursor_pos[1]-1]), self.cursor_pos[1]-1]
+                    self.value[self.cursor_pos[1]-1] += right_part
+                    self.cursor_pos = next_cursor_pos
+            case 127:         # K_DELETE
+                if self.cursor_pos[0] < len(self.value[self.cursor_pos[1]]):
+                    self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]] +\
+                        self.value[self.cursor_pos[1]][self.cursor_pos[0]:][1:]
+                elif self.cursor_pos[1] != len(self.value)-1:
+                    left_part: str = self.value[self.cursor_pos[1]+1]
+                    self.value.pop(self.cursor_pos[1]+1)
+                    self.value[self.cursor_pos[1]] += left_part
             case 1073741904:  # K_LEFT
                 if self.cursor_pos[0] > 0:
                     self.cursor_pos[0] -= 1
