@@ -8,7 +8,7 @@ from functools import cache
 class TextInputManager:
     def __init__(self,
                  initial: List[str] = [""]):
-        self.value: List[str] = initial  # string to the left of the cursor
+        self.value: List[str] = initial
         self.cursor_pos: List[int] = [len(self.value[-1]), len(self.value)-1]
 
     @property
