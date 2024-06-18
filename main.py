@@ -145,7 +145,7 @@ while True:
 
     WIN.blit(transform.flip(display1, False, True), (0, 0))
 
-    for j, i in enumerate(code_textarea.manager.value):
+    for j, i in enumerate(code_textarea.value):
         if excepp[j]:
             draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height+processor_vertical_offset, *font_size))
             draw.rect(WIN, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4),
