@@ -70,9 +70,13 @@ class TextInputManager:
             case 1073741898:  # K_HOME
                 self.cursor_pos = [0, 0]
             case 13:          # K_RETURN
-                self.left += "\n"
+                next_line: str = self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
+                self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]]
+                self.value.insert(self.cursor_pos[1]+1, next_line)
+                self.cursor_pos = [0, self.cursor_pos[1]+1]
             case _:
-                self.left += e.unicode
+                self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]] + e.unicode + self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
+                self.cursor_pos[0] += 1
 
 
 class TextInputVisualizer:
