@@ -13,21 +13,24 @@ class TextInputManager:
 
     @property
     def left(self) -> List[str]:
-        return [*self.value[:self.cursor_pos[1]], self.value[self.cursor_pos[1]][:self.cursor_pos[0]]]
+        return [*self.value[:self.cursor_pos[1]],
+                self.value[self.cursor_pos[1]][:self.cursor_pos[0]]]
 
     @left.setter
-    def left(self, a) -> List[str]:
-        self.value[:self.cursor_pos[1]]
-        self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
+    def left(self, a: List[str]) -> List[str]:
+        self.value = [*a[:-1],
+                      a[-1] + self.right[0],
+                      *self.right[1:]]
 
     @property
     def right(self) -> List[str]:
-        return [self.value[self.cursor_pos[1]][self.cursor_pos[0]:], *self.value[self.cursor_pos[1]:]]
+        return [self.value[self.cursor_pos[1]][self.cursor_pos[0]:],
+                *self.value[self.cursor_pos[1]+1:]]
 
-    @right.setter
-    def right(self, a) -> List[str]:
-        self.value[:self.cursor_pos[1]]
-        self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
+    # @right.setter
+    # def right(self, a: List[str]) -> List[str]:
+    #     self.value[:self.cursor_pos[1]]
+    #     self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
 
     def update(self, events: List[event.Event]) -> None:
         for e in events:
