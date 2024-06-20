@@ -90,8 +90,11 @@ class TextInputManager:
                 self.value.insert(self.cursor_pos[1]+1, next_line)
                 self.cursor_pos = [0, self.cursor_pos[1]+1]
             case _:
-                self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]] + e.unicode + self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
-                self.cursor_pos[0] += 1
+                if e.unicode.isascii():  # UNICODE
+                    self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]] + e.unicode + self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
+                    self.cursor_pos[0] += 1
+                else:
+                    print(f"Unknown key: {event.event_name(e.key)} with repr {e.unicode}")
 
 
 class TextInputVisualizer:
