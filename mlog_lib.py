@@ -41,7 +41,7 @@ class TextInputManager:
         match e.key:
             case 27:          # K_ESCAPE
                 pass
-            case 8:           # K_BACKSPACE
+            case 8:                      # K_BACKSPACE
                 if self.cursor_pos[0] > 0:
                     self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]][:-1] +\
                         self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
@@ -52,7 +52,7 @@ class TextInputManager:
                     next_cursor_pos: List[int] = [len(self.value[self.cursor_pos[1]-1]), self.cursor_pos[1]-1]
                     self.value[self.cursor_pos[1]-1] += right_part
                     self.cursor_pos = next_cursor_pos
-            case 127:         # K_DELETE
+            case 127:                    # K_DELETE
                 if self.cursor_pos[0] < len(self.value[self.cursor_pos[1]]):
                     self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]] +\
                         self.value[self.cursor_pos[1]][self.cursor_pos[0]:][1:]
@@ -60,29 +60,29 @@ class TextInputManager:
                     left_part: str = self.value[self.cursor_pos[1]+1]
                     self.value.pop(self.cursor_pos[1]+1)
                     self.value[self.cursor_pos[1]] += left_part
-            case 1073741904:  # K_LEFT
+            case 1073741904:             # K_LEFT
                 if self.cursor_pos[0] > 0:
                     self.cursor_pos[0] -= 1
                 elif self.cursor_pos[1] != 0:
                     self.cursor_pos = [len(self.value[self.cursor_pos[1]-1]), self.cursor_pos[1]-1]
-            case 1073741903:  # K_RIGHT
+            case 1073741903:             # K_RIGHT
                 if self.cursor_pos[0] < len(self.value[self.cursor_pos[1]]):
                     self.cursor_pos[0] += 1
                 elif self.cursor_pos[1] != len(self.value)-1:
                     self.cursor_pos = [0, self.cursor_pos[1]+1]
-            case 1073741906:  # K_UP
+            case 1073741906:             # K_UP
                 if self.cursor_pos[1] == 0:
                     return
                 self.cursor_pos[1] -= 1
-            case 1073741905:  # K_DOWN
+            case 1073741905:             # K_DOWN
                 if self.cursor_pos[1] == len(self.value)-1:
                     return
                 self.cursor_pos[1] += 1
-            case 1073741901:  # K_END
+            case 1073741901:             # K_END
                 self.cursor_pos = [len(self.value[-1]), len(self.value)-1]
-            case 1073741898:  # K_HOME
+            case 1073741898:             # K_HOME
                 self.cursor_pos = [0, 0]
-            case 13:          # K_RETURN
+            case 13:                     # K_RETURN
                 next_line: str = self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
                 self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]]
                 self.value.insert(self.cursor_pos[1]+1, next_line)
@@ -119,7 +119,7 @@ class TextInputVisualizer:
         self._rerender_required = True
 
     @property
-    def value(self):
+    def value(self) -> List[str]:
         return self.manager.value
 
     @value.setter
