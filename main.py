@@ -104,10 +104,10 @@ while True:
     processor_cursor_pos[0] = FONT.size(code_textarea.manager.left[-1])[0]/font_width
     processor_cursor_pos[1] = code_textarea.manager.cursor_pos[1]
 
-    while len(decoded) != len(code_textarea.value):
-        if len(decoded) < len(code_textarea.value):
     inputt_len: int = len(code_textarea.value)
 
+    while len(decoded) != inputt_len:
+        if len(decoded) < inputt_len:
             decoded.append("")
             excepp.append("")
         elif len(decoded) > inputt_len:
