@@ -146,20 +146,25 @@ while True:
         print(decoded, excepp, code_textarea.value)
         raise IndexError("These lists not match? Strange...")
 
-    WIN.blit(transform.flip(display1, False, True), (0, 0))
+    WIN.blit(transform.flip(display1, False, True), (WIDTH/2-176, 0))
 
     for j, i in enumerate(code_textarea.value):
         if excepp[j]:
             draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height+processor_vertical_offset, *font_size))
             draw.rect(WIN, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4),
                       (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
-        if decoded[j] == trans_m_to_p("NotImplemented"):
+        elif decoded[j] == trans_m_to_p("NotImplemented"):
             draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height+processor_vertical_offset, *font_size))
             draw.rect(WIN, (Cwarn[0]/4, Cwarn[1]/4, Cwarn[2]/4),
                       (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
+        elif i:
+            command_color = get_command_color(i.split(maxsplit=1)[0])
+            draw.rect(WIN, command_color,
+                      (0, j*font_height+processor_vertical_offset, font_width*(linelog10), font_height))
 
         WIN.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j+processor_vertical_offset))
-        WIN.blit(FONT.render(i, 1, get_command_color(f"{i} _".split(maxsplit=1)[0])),
+
+        WIN.blit(FONT.render(i, 1, Ctxt),
                  (font_width*(linelog10+0.5), font_height*j+processor_vertical_offset))
 
         if mouse_pos.x >= WIDTH-font_width:
