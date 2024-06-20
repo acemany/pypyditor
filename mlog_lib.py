@@ -302,30 +302,17 @@ def raw2d(seed: int, x: float, y: float) -> float:
 
 def get_command_color(word: str) -> str:
     """return color of command\n
-    unknown - #4c4c4c\n
     I/O - #a08a8a\n
     flush - #d4816b\n
     operations - #877bad\n
-    system - #6bb2b2"""
+    system - #6bb2b2\n
+    unknown - #4c4c4c"""
 
-    if word in ("read", "write", "draw", "print"):
-        return "#a08a8a"
-    elif word in ("drawflush", "printflush"):
-        return "#d4816b"
-    elif word in ("set", "op"):
-        return "#877bad"
-    elif word in ("wait", "stop", "end", "jump"):
-        return "#6bb2b2"
-    elif word in ("clear", "color", "col", "stroke", "line", "rect", "lineRect", "poly", "linePoly", "triangle", "image"):
-        return "#d4816b"
-    elif word in ("add", "sub", "mul", "div", "idiv", "mod", "pow",
-                  "equal", "notEqual", "land", "lessThan", "lessThanEq", "greaterThan", "greaterThanEq", "strictEqual",
-                  "shl", "shr", "or", "and", "xor", "not",
-                  "max", "min", "angle", "angleDiff", "len", "noise", "abs", "log", "log10", "floor", "ceil", "sqrt", "rand",
-                  "sin", "cos", "tan",
-                  "asin", "acos", "atan"):
-        return "#877bad"
-    return "#4c4c4c"
+    return (160, 138, 138) if word in ("read", "write", "draw", "print") else\
+           (212, 129, 107) if word in ("drawflush", "printflush") else\
+           (135, 123, 173) if word in ("set", "op") else\
+           (107, 178, 178) if word in ("wait", "stop", "end", "jump") else\
+           (76, 76, 76)
 
 
 def mlog_to_python(code: str) -> str:
