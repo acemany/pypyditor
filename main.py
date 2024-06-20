@@ -89,8 +89,6 @@ while True:
     keys_pressed = key.get_pressed()
     events = event.get()
 
-    inputt_len: int = len(code_textarea.value)
-
     for e in events:
         if e.type == QUIT or keys_pressed[K_ESCAPE]:
             queuit()
@@ -108,9 +106,11 @@ while True:
 
     while len(decoded) != len(code_textarea.value):
         if len(decoded) < len(code_textarea.value):
+    inputt_len: int = len(code_textarea.value)
+
             decoded.append("")
             excepp.append("")
-        elif len(decoded) > len(code_textarea.value):
+        elif len(decoded) > inputt_len:
             decoded.pop()
             excepp.pop()
 
@@ -119,7 +119,7 @@ while True:
 
     while timer >= processor_speed:
         timer -= processor_speed
-        processor_counter %= len(code_textarea.value)
+        processor_counter %= inputt_len
 
         raw_line: str = code_textarea.value[processor_counter]
         try:
