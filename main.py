@@ -96,9 +96,9 @@ while True:
             key.start_text_input()
         elif e.type == MOUSEBUTTONDOWN:
             if e.button == BUTTON_WHEELDOWN and processor_vertical_offset > -font_height*(len(code_textarea.value)-1):
-                processor_vertical_offset -= font_height
+                processor_vertical_offset -= font_height * 2
             elif e.button == BUTTON_WHEELUP and processor_vertical_offset < 0:
-                processor_vertical_offset += font_height
+                processor_vertical_offset += font_height * 2
 
     code_textarea.update(events)
     processor_cursor_pos[0] = FONT.size(code_textarea.manager.left[-1])[0]/font_width
