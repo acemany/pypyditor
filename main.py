@@ -1,6 +1,7 @@
 from mlog_lib import trans_m_to_p, get_command_color, TextInputManager, TextInputVisualizer
 from pygame import (display, draw, event, font, key, mouse, time, transform,
-                    FINGERDOWN, QUIT, BUTTON_WHEELDOWN, BUTTON_WHEELUP, MOUSEBUTTONDOWN,
+                    BUTTON_LEFT, BUTTON_WHEELDOWN, BUTTON_WHEELUP,
+                    FINGERDOWN, QUIT, MOUSEBUTTONDOWN,
                     Surface, Vector2, Color,
                     init, quit as squit,
                     K_ESCAPE)
