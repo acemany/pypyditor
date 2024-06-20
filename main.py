@@ -115,7 +115,7 @@ while True:
             excepp.pop()
 
     if 1:
-        linelog10 = ceil(log10(inputt_len+1))
+        linelog10 = ceil(log10(inputt_len))
 
     while timer >= processor_speed:
         timer -= processor_speed
