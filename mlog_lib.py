@@ -1,20 +1,73 @@
 from pygame import (event, font, time,
-                    Rect, Surface,
+                    Color, Rect, Surface,
                     KEYDOWN, KMOD_CTRL)
 from typing import List, Tuple
 from functools import cache
+
+
+class Vector2i:
+    x: int
+    y: int
+
+    def __init__(self, x: int | List[int], y: int | None = None):
+        """Just 2d vector with int as axes\n
+        Vector2i(6, 9)\n
+        Vector2i([6, 9])"""
+        if y is not None:
+            self.x = x
+            self.y = y
+        else:
+            self.x, self.y = x
+
+    def __getitem__(self, i) -> int:
+        return (self.x, self.y)[i]
+
+    @property
+    def xy(self) -> List[int]:
+        return [self.x, self.y]
+
+    @xy.setter
+    def xy(self, a: List[int]):
+        self.x, self.y = a
+
+    @property
+    def yx(self) -> List[int]:
+        return [self.y, self.x]
+
+    @yx.setter
+    def yx(self, a: List[int]):
+        self.y, self.x = a
+
+    def update(self, x: int | List[int], y: int | None = None):
+        "Set new "
+        if y is not None:
+            self.x = x
+            self.y = y
+        else:
+            self.x, self.y = x
 
 
 class TextInputManager:
     def __init__(self,
                  initial: List[str] = [""]):
         self.value: List[str] = initial
-        self.cursor_pos: List[int] = [len(self.value[-1]), len(self.value)-1]
+        self.cursor_pos: Vector2i = Vector2i(len(self.value[-1]), len(self)-1)
+
+    def __len__(self):
+        return len(self.value)
+
+    @property
+    def cur_line(self):
+        return self.value[self.cursor_pos.y]
+
+    @cur_line.setter
+    def cur_line(self, a):
+        self.value[self.cursor_pos.y] = a
 
     @property
     def left(self) -> List[str]:
-        return [*self.value[:self.cursor_pos[1]],
-                self.value[self.cursor_pos[1]][:self.cursor_pos[0]]]
+        return [*self.value[:self.cursor_pos.y],
+                self.cur_line[:self.cursor_pos.x]]
 
     @left.setter
     def left(self, a: List[str]) -> List[str]:
@@ -24,13 +77,13 @@ class TextInputManager:
 
     @property
     def right(self) -> List[str]:
-        return [self.value[self.cursor_pos[1]][self.cursor_pos[0]:],
-                *self.value[self.cursor_pos[1]+1:]]
+        return [self.cur_line[self.cursor_pos.x:],
+                *self.value[self.cursor_pos.y+1:]]
 
     # @right.setter
     # def right(self, a: List[str]) -> List[str]:
-    #     self.value[:self.cursor_pos[1]]
-    #     self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
+    #     self.value[:self.cursor_pos.y]
+    #     self.cur_line = self.cur_line[self.cursor_pos.x:]
 
     def update(self, events: List[event.Event]) -> None:
         for e in events:
@@ -42,87 +95,90 @@ class TextInputManager:
             case 27:          # K_ESCAPE
                 pass
             case 8:                      # K_BACKSPACE
-                if self.cursor_pos[0] > 0:
-                    self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]][:-1] +\
-                        self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
-                    self.cursor_pos[0] -= 1
-                elif self.cursor_pos[1] != 0:
-                    right_part: str = self.value[self.cursor_pos[1]]
-                    self.value.pop(self.cursor_pos[1])
-                    next_cursor_pos: List[int] = [len(self.value[self.cursor_pos[1]-1]), self.cursor_pos[1]-1]
-                    self.value[self.cursor_pos[1]-1] += right_part
-                    self.cursor_pos = next_cursor_pos
+                if self.cursor_pos.x > 0:
+                    self.cur_line = self.cur_line[:self.cursor_pos.x][:-1] +\
+                        self.cur_line[self.cursor_pos.x:]
+                    self.cursor_pos.x -= 1
+                elif self.cursor_pos.y > 0:
+                    right_part: str = self.cur_line
+                    self.value.pop(self.cursor_pos.y)
+                    next_cursor_pos: List[int] = (len(self.value[self.cursor_pos.y-1]), self.cursor_pos.y-1)
+                    self.value[self.cursor_pos.y-1] += right_part
+                    self.cursor_pos.update(next_cursor_pos)
             case 127:                    # K_DELETE
-                if self.cursor_pos[0] < len(self.value[self.cursor_pos[1]]):
-                    self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]] +\
-                        self.value[self.cursor_pos[1]][self.cursor_pos[0]:][1:]
-                elif self.cursor_pos[1] != len(self.value)-1:
-                    left_part: str = self.value[self.cursor_pos[1]+1]
-                    self.value.pop(self.cursor_pos[1]+1)
-                    self.value[self.cursor_pos[1]] += left_part
+                if self.cursor_pos.x < len(self.cur_line):
+                    self.cur_line = self.cur_line[:self.cursor_pos.x] +\
+                        self.cur_line[self.cursor_pos.x:][1:]
+                elif self.cursor_pos.y < len(self)-1:
+                    left_part: str = self.value[self.cursor_pos.y+1]
+                    self.value.pop(self.cursor_pos.y+1)
+                    self.cur_line += left_part
             case 1073741904:             # K_LEFT
-                if self.cursor_pos[0] > 0:
-                    self.cursor_pos[0] = min(self.cursor_pos[0], len(self.value[self.cursor_pos[1]]))
-                    self.cursor_pos[0] -= 1
-                elif self.cursor_pos[1] != 0:
-                    self.cursor_pos = [len(self.value[self.cursor_pos[1]-1]), self.cursor_pos[1]-1]
+                if self.cursor_pos.x > 0:
+                    self.cursor_pos.x = min(self.cursor_pos.x, len(self.cur_line))
+                    self.cursor_pos.x -= 1
+                elif self.cursor_pos.y > 0:
+                    self.cursor_pos.update(len(self.value[self.cursor_pos.y-1]), self.cursor_pos.y-1)
             case 1073741903:             # K_RIGHT
-                if self.cursor_pos[0] < len(self.value[self.cursor_pos[1]]):
-                    self.cursor_pos[0] = min(self.cursor_pos[0], len(self.value[self.cursor_pos[1]]))
-                    self.cursor_pos[0] += 1
-                elif self.cursor_pos[1] != len(self.value)-1:
-                    self.cursor_pos = [0, self.cursor_pos[1]+1]
+                if self.cursor_pos.x < len(self.cur_line):
+                    self.cursor_pos.x = min(self.cursor_pos.x, len(self.cur_line))
+                    self.cursor_pos.x += 1
+                elif self.cursor_pos.y < len(self)-1:
+                    self.cursor_pos.update(0, self.cursor_pos.y+1)
             case 1073741906:             # K_UP
-                if self.cursor_pos[1] == 0:
-                    return
-                self.cursor_pos[1] -= 1
+                if self.cursor_pos.y > 0:
+                    self.cursor_pos.y -= 1
+                elif self.cursor_pos.x > 0:
+                    self.cursor_pos.update(0, 0)
             case 1073741905:             # K_DOWN
-                if self.cursor_pos[1] == len(self.value)-1:
-                    return
-                self.cursor_pos[1] += 1
+                if self.cursor_pos.y < len(self)-1:
+                    self.cursor_pos.y = min(self.cursor_pos.y, len(self))
+                    self.cursor_pos.y += 1
+                elif self.cursor_pos.x < len(self.cur_line):
+                    self.cursor_pos.update(len(self.value[-1]), len(self)-1)
             case 1073741901:             # K_END
-                self.cursor_pos = [len(self.value[-1]), len(self.value)-1]
+                self.cursor_pos.update
             case 1073741898:             # K_HOME
-                self.cursor_pos = [0, 0]
+                self.cursor_pos.update(0, 0)
             case 13:                     # K_RETURN
-                next_line: str = self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
-                self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]]
-                self.value.insert(self.cursor_pos[1]+1, next_line)
-                self.cursor_pos = [0, self.cursor_pos[1]+1]
+                next_line: str = self.cur_line[self.cursor_pos.x:]
+                self.cur_line = self.cur_line[:self.cursor_pos.x]
+                self.value.insert(self.cursor_pos.y+1, next_line)
+                self.cursor_pos.update(0, self.cursor_pos.y+1)
             case _:
-                    self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]] + e.unicode + self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
-                    self.cursor_pos[0] += 1
                 if e.unicode.isprintable() and\
                    not e.mod & KMOD_CTRL:  # UNICODE
+                    self.cur_line = self.cur_line[:self.cursor_pos.x] + e.unicode + self.cur_line[self.cursor_pos.x:]
+                    self.cursor_pos.x += 1
                 else:
                     print(f"Unknown key {event.event_name(e.key)} with repr {e.unicode}")
 
 
 class TextInputVisualizer:
     def __init__(self,
-                 manager: TextInputManager = None,
-                 font_object: font.Font = None,
+                 manager: TextInputManager | None = None,
+                 font_object: font.Font | None = None,
                  antialias: bool = True,
-                 font_color: List[int] = (0, 0, 0),
+                 font_color: Color = 0,
                  cursor_blink_interval: int = 300,
                  cursor_width: int = 3,
-                 cursor_color: List[int] = (0, 0, 0)):
+                 cursor_color: Color = 0):
 
-        self.manager = TextInputManager() if manager is None else manager
-        self._font_object = font.Font(font.get_default_font(), 25) if font_object is None else font_object
-        self._antialias = antialias
-        self._font_color = font_color
+        self.manager: TextInputManager = TextInputManager() if manager is None else manager
+        self._font_object: font.FontType = font.Font(font.get_default_font(), 25) if font_object is None else font_object
+        self._antialias: bool = antialias
+        self._font_colorColor: Color = font_color
 
-        self._clock = time.Clock()
-        self._cursor_blink_interval = cursor_blink_interval
-        self._cursor_visible = False
-        self._last_blink_toggle = 0
+        self._clock: time.Clock = time.Clock()
+        self._cursor_blink_interval: float = cursor_blink_interval
+        self._cursor_visible: bool = False
+        self._last_blink_toggle: float = 0
 
-        self._cursor_width = cursor_width
-        self._cursor_color = cursor_color
+        self._cursor_width: int = cursor_width
+        self._cursor_color: Color = cursor_color
 
-        self._surface = Surface((self._cursor_width, self._font_object.get_height()))
-        self._rerender_required = True
+        self._surface: Surface = Surface((self._cursor_width, self._font_object.get_height()))
+        self._rerender_required: bool = True
 
     @property
     def value(self) -> List[str]:
