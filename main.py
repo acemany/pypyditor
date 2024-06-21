@@ -25,8 +25,11 @@ WIDTH, HEIGHT = SC_RES
 FONT: font.Font = font.SysFont('Monospace', 12, bold=True)
 CLOCK: time.Clock = time.Clock()
 gamedir: Path = Path(__file__).parent
-font_size: Tuple[int, int] = FONT.size("N")
-font_width, font_height = font_size
+font_width: float = FONT.size("ABCDEFGHIJKLMNOPQRSTUVWXYZ"  # font not monospaced...
+                              "abcdefghijklmnopqrstuvwxyz"
+                              "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
+                              "абвгдеёжзийклмнопрстуфхцчшщъыьэюя")[0]/118
+font_height: int = 12
 
 Cbg: Color = Color(18, 18, 18)
 Cfg: Color = Color(36, 36, 36)
@@ -150,11 +153,11 @@ while True:
 
     for j, i in enumerate(code_textarea.value):
         if excepp[j]:
-            draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height+processor_vertical_offset, *font_size))
+            draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height+processor_vertical_offset, font_width, font_height))
             draw.rect(WIN, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4),
                       (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
         elif decoded[j] == trans_m_to_p("NotImplemented"):
-            draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height+processor_vertical_offset, *font_size))
+            draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height+processor_vertical_offset, font_width, font_height))
             draw.rect(WIN, (Cwarn[0]/4, Cwarn[1]/4, Cwarn[2]/4),
                       (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
         elif i:
