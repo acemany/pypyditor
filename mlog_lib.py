@@ -1,6 +1,6 @@
 from pygame import (event, font, time,
                     Rect, Surface,
-                    KEYDOWN)
+                    KEYDOWN, KMOD_CTRL)
 from typing import List, Tuple
 from functools import cache
 
@@ -90,11 +90,12 @@ class TextInputManager:
                 self.value.insert(self.cursor_pos[1]+1, next_line)
                 self.cursor_pos = [0, self.cursor_pos[1]+1]
             case _:
-                if e.unicode.isascii():  # UNICODE
                     self.value[self.cursor_pos[1]] = self.value[self.cursor_pos[1]][:self.cursor_pos[0]] + e.unicode + self.value[self.cursor_pos[1]][self.cursor_pos[0]:]
                     self.cursor_pos[0] += 1
+                if e.unicode.isprintable() and\
+                   not e.mod & KMOD_CTRL:  # UNICODE
                 else:
-                    print(f"Unknown key: {event.event_name(e.key)} with repr {e.unicode}")
+                    print(f"Unknown key {event.event_name(e.key)} with repr {e.unicode}")
 
 
 class TextInputVisualizer:
