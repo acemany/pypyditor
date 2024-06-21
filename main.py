@@ -104,7 +104,7 @@ while True:
                 processor_vertical_offset += font_height * 2
             elif e.button == BUTTON_LEFT:
                 code_textarea.manager.cursor_pos.y = min(int(mouse_pos.y-processor_vertical_offset)//font_height, len(code_textarea.manager)-1)
-                code_textarea.manager.cursor_pos.x = int((mouse_pos.x-(linelog10+0.5)*font_width)//font_width)
+                code_textarea.manager.cursor_pos.x = int(mouse_pos.x//font_width-linelog10)
 
     code_textarea.update(events)
     processor_cursor_pos[0] = FONT.size(code_textarea.manager.left[-1])[0]/font_width
