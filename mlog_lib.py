@@ -92,8 +92,6 @@ class TextInputManager:
 
     def _process_keydown(self, e: event.Event) -> None:
         match e.key:
-            case 27:          # K_ESCAPE
-                pass
             case 8:                      # K_BACKSPACE
                 if self.cursor_pos.x > 0:
                     self.cur_line = self.cur_line[:self.cursor_pos.x][:-1] +\
