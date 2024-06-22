@@ -9,3 +9,4 @@
 
 - Make ctrl+c and ctrl+v support
 - Save/load support
+- Implement support for Lonami/pyndustric translator, it is SO good
