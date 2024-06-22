@@ -1,4 +1,11 @@
-Make code more readable
-Optimise
-Make ctrl+c and ctrl+v support
-Save/load support
+# TODO list, i'm too lazy for trello
+
+## Core things
+
+- Make code more readable
+- Optimise
+
+## Features
+
+- Make ctrl+c and ctrl+v support
+- Save/load support
