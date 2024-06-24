@@ -8,11 +8,11 @@ jump 23 equal input 1
 jump 26 equal input 2
 jump 32 equal input 3
 jump 38 equal input 4
-jump -1 equal input 5
-jump -1 equal input 6
-jump -1 equal input 7
-jump -1 equal input 8
-jump -1 equal input 9
+jump 43 equal input 5
+jump 49 equal input 6
+jump 56 equal input 7
+jump 60 equal input 8
+jump 68 equal input 9
 jump 1 always 0 0
 draw line 6 6 42 6 0 0
 draw line 42 6 42 42 0 0
@@ -43,6 +43,23 @@ draw line 6 42 42 42 0 0
 jump 1 always 0 0
 draw line 6 6 42 6 0 0
 draw line 42 6 42 42 0 0
+draw line 42 78 6 78 0 0
+draw line 6 78 6 42 0 0
+draw line 6 42 42 42 0 0
+jump 1 always 0 0
+draw line 6 6 42 6 0 0
+draw line 42 6 42 42 0 0
+draw line 42 78 6 78 0 0
+draw line 6 78 6 42 0 0
+draw line 6 42 6 6 0 0
+draw line 6 42 42 42 0 0
+jump 1 always 0 0
+draw line 42 6 42 42 0 0
+draw line 42 42 42 78 0 0
+draw line 42 78 6 78 0 0
+jump 1 always 0 0
+draw line 6 6 42 6 0 0
+draw line 42 6 42 42 0 0
 draw line 42 42 42 78 0 0
 draw line 42 78 6 78 0 0
 draw line 6 78 6 42 0 0
@@ -54,6 +71,5 @@ draw line 42 6 42 42 0 0
 draw line 42 42 42 78 0 0
 draw line 42 78 6 78 0 0
 draw line 6 78 6 42 0 0
-draw line 6 42 6 6 0 0
 draw line 6 42 42 42 0 0
 jump 1 always 0 0
