@@ -1,75 +1,83 @@
-draw col %ffffff 0 0 0 0 0
+draw stroke 2 3 3 170 0 0
+set bds 2
+set siz 10
+op add s1  bds siz
+op add s2  s1  siz
+op add h2  s1  0
+op add h1  h2  siz
 read input cell1 0
-draw stroke 2 6 6 170 0 0
+op mod input input 10
 drawflush display1
-draw clear 0 0 0 0 0 0
-jump 16 equal input 0
-jump 23 equal input 1
-jump 26 equal input 2
-jump 32 equal input 3
-jump 38 equal input 4
-jump 43 equal input 5
-jump 49 equal input 6
-jump 56 equal input 7
-jump 60 equal input 8
-jump 68 equal input 9
+draw color 27 33 37 255 0 0
+draw rect 0 0 h1  s2  0 0
+draw color 255 255 255 255 0 0
+jump 24 equal input 0
+jump 31 equal input 1
+jump 34 equal input 2
+jump 40 equal input 3
+jump 46 equal input 4
+jump 51 equal input 5
+jump 57 equal input 6
+jump 64 equal input 7
+jump 68 equal input 8
+jump 76 equal input 9
 jump 1 always 0 0
-draw line 6 6 42 6 0 0
-draw line 42 6 42 42 0 0
-draw line 42 42 42 78 0 0
-draw line 42 78 6 78 0 0
-draw line 6 78 6 42 0 0
-draw line 6 42 6 6 0 0
+draw line h2 bds h1 bds 0 0
+draw line h1 bds h1 s1  0 0
+draw line h1 s1  h1 s2  0 0
+draw line h1 s2  h2 s2  0 0
+draw line h2 s2  h2 s1  0 0
+draw line h2 s1  h2 bds 0 0
 jump 1 always 0 0
-draw line 42 6 42 42 0 0
-draw line 42 42 42 78 0 0
+draw line h1 bds h1 s1  0 0
+draw line h1 s1  h1 s2  0 0
 jump 1 always 0 0
-draw line 42 6 6 6 0 0
-draw line 6 42 6 6 0 0
-draw line 6 42 42 42 0 0
-draw line 42 78 42 42 0 0
-draw line 42 78 6 78 0 0
+draw line h1 bds h2 bds 0 0
+draw line h2 s1  h2 bds 0 0
+draw line h2 s1  h1 s1  0 0
+draw line h1 s2  h1 s1  0 0
+draw line h1 s2  h2 s2  0 0
 jump 1 always 0 0
-draw line 6 6 42 6 0 0
-draw line 42 6 42 42 0 0
-draw line 42 42 42 78 0 0
-draw line 42 78 6 78 0 0
-draw line 6 42 42 42 0 0
+draw line h2 bds h1 bds 0 0
+draw line h1 bds h1 s1  0 0
+draw line h1 s1  h1 s2  0 0
+draw line h1 s2  h2 s2  0 0
+draw line h2 s1  h1 s1  0 0
 jump 1 always 0 0
-draw line 42 6 42 42 0 0
-draw line 42 42 42 78 0 0
-draw line 6 78 6 42 0 0
-draw line 6 42 42 42 0 0
+draw line h1 bds h1 s1  0 0
+draw line h1 s1  h1 s2  0 0
+draw line h2 s2  h2 s1  0 0
+draw line h2 s1  h1 s1  0 0
 jump 1 always 0 0
-draw line 6 6 42 6 0 0
-draw line 42 6 42 42 0 0
-draw line 42 78 6 78 0 0
-draw line 6 78 6 42 0 0
-draw line 6 42 42 42 0 0
+draw line h2 bds h1 bds 0 0
+draw line h1 bds h1 s1  0 0
+draw line h1 s2  h2 s2  0 0
+draw line h2 s2  h2 s1  0 0
+draw line h2 s1  h1 s1  0 0
 jump 1 always 0 0
-draw line 6 6 42 6 0 0
-draw line 42 6 42 42 0 0
-draw line 42 78 6 78 0 0
-draw line 6 78 6 42 0 0
-draw line 6 42 6 6 0 0
-draw line 6 42 42 42 0 0
+draw line h2 bds h1 bds 0 0
+draw line h1 bds h1 s1  0 0
+draw line h1 s2  h2 s2  0 0
+draw line h2 s2  h2 s1  0 0
+draw line h2 s1  h2 bds 0 0
+draw line h2 s1  h1 s1  0 0
 jump 1 always 0 0
-draw line 42 6 42 42 0 0
-draw line 42 42 42 78 0 0
-draw line 42 78 6 78 0 0
+draw line h1 bds h1 s1  0 0
+draw line h1 s1  h1 s2  0 0
+draw line h1 s2  h2 s2  0 0
 jump 1 always 0 0
-draw line 6 6 42 6 0 0
-draw line 42 6 42 42 0 0
-draw line 42 42 42 78 0 0
-draw line 42 78 6 78 0 0
-draw line 6 78 6 42 0 0
-draw line 6 42 6 6 0 0
-draw line 6 42 42 42 0 0
+draw line h2 bds h1 bds 0 0
+draw line h1 bds h1 s1  0 0
+draw line h1 s1  h1 s2  0 0
+draw line h1 s2  h2 s2  0 0
+draw line h2 s2  h2 s1  0 0
+draw line h2 s1  h2 bds 0 0
+draw line h2 s1  h1 s1  0 0
 jump 1 always 0 0
-draw line 6 6 42 6 0 0
-draw line 42 6 42 42 0 0
-draw line 42 42 42 78 0 0
-draw line 42 78 6 78 0 0
-draw line 6 78 6 42 0 0
-draw line 6 42 42 42 0 0
+draw line h2 bds h1 bds 0 0
+draw line h1 bds h1 s1  0 0
+draw line h1 s1  h1 s2  0 0
+draw line h1 s2  h2 s2  0 0
+draw line h2 s2  h2 s1  0 0
+draw line h2 s1  h1 s1  0 0
 jump 1 always 0 0
