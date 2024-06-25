@@ -160,7 +160,7 @@ while True:
             draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height+processor_vertical_offset, font_width, font_height))
             draw.rect(WIN, (Cwarn[0]/4, Cwarn[1]/4, Cwarn[2]/4),
                       (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
-        elif i:
+        elif i.replace(' ', ''):
             command_color = get_command_color(i.split(maxsplit=1)[0])
             draw.rect(WIN, command_color,
                       (0, j*font_height+processor_vertical_offset, font_width*(linelog10), font_height))
