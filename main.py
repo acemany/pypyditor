@@ -164,8 +164,11 @@ while True:
             command_color = get_command_color(i.split(maxsplit=1)[0])
             draw.rect(WIN, command_color,
                       (0, j*font_height+processor_vertical_offset, font_width*(linelog10), font_height))
-
-        WIN.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j+processor_vertical_offset))
+            WIN.blit(FONT.render(f"{j}", 1, (((command_color[0]+128) % 256)/2,
+                                             ((command_color[1]+128) % 256)/2,
+                                             ((command_color[2]+128) % 256)/2)), (0, font_height*j+processor_vertical_offset))
+        else:
+            WIN.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j+processor_vertical_offset))
 
         WIN.blit(FONT.render(i, 1, Ctxt),
                  (font_width*(linelog10+0.5), font_height*j+processor_vertical_offset))
