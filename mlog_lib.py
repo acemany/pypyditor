@@ -144,8 +144,7 @@ class TextInputManager:
                 self.value.insert(self.cursor_pos.y+1, next_line)
                 self.cursor_pos.update(0, self.cursor_pos.y+1)
             case _:
-                if e.unicode.isprintable() and\
-                   not e.mod & KMOD_CTRL:  # UNICODE
+                if e.unicode.isprintable() and e.unicode:  # UNICODE
                     self.cur_line = self.cur_line[:self.cursor_pos.x] + e.unicode + self.cur_line[self.cursor_pos.x:]
                     self.cursor_pos.x += 1
                 else:
