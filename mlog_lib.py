@@ -49,8 +49,8 @@ class Vector2i:
 
 class TextInputManager:
     def __init__(self,
-                 initial: List[str] = [""]):
-        self.value: List[str] = initial
+                 initial: List[str]):
+        self.value: List[str] = initial if initial else [""]
         self.cursor_pos: Vector2i = Vector2i(len(self.value[-1]), len(self)-1)
 
     def __len__(self):
