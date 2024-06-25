@@ -39,7 +39,7 @@ class Vector2i:
         self.y, self.x = a
 
     def update(self, x: int | List[int], y: int | None = None):
-        "Set new "
+        "Set new position"
         if y is not None:
             self.x = x
             self.y = y
