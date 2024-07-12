@@ -1,3 +1,2 @@
 # pypyditor
-
- A little more complicated than simple python(now java) text editor
+ A little more complicated than simple python text editor
