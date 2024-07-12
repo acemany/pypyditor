@@ -1,12 +1,15 @@
-# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized files
 __pycache__/
 *.py[cod]
 
 # Java
-/nbproject/private/
-/build/
-/dist/
+nbproject/private/
+build/
+dist/
+.idea/
 *.class
+*.jar
+
 
 # Other
 *.log
