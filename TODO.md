@@ -2,12 +2,12 @@
 
 ## Core things
 
-[ ] REWRITE THE CODE TO JAVA
-[ ] Make code more readable
-[ ] Optimise
+- [ ] REWRITE THE CODE TO JAVA
+- [ ] Make code more readable
+- [ ] Optimise
 
 ## Features
 
-[ ] Make ctrl+c and ctrl+v support
-[ ] Save/load support
-[ ] Implement support for Lonami/pyndustric translator, it is SO good
+- [ ] Make ctrl+c and ctrl+v support
+- [ ] Save/load support
+- [ ] Implement support for Lonami/pyndustric translator, it is SO good
