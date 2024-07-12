@@ -12,7 +12,7 @@ from sys import exit
 
 exec("""
 from random import random
-from mlog_lib import raw2d
+from py.mlog_lib import raw2d
 from time import sleep""")  # for made pyflake8 shut up
 
 
