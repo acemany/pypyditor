@@ -1,19 +1,17 @@
-from mlog_lib import trans_m_to_p, get_command_color, TextInputManager, TextInputVisualizer
+from mlog_lib import trans_m_to_p, get_command_color, TextInputManager, TextInputVisualizer, ColorValue
 from pygame import (display, draw, event, font, key, mouse, time, transform,
                     BUTTON_LEFT, BUTTON_WHEELDOWN, BUTTON_WHEELUP,
                     FINGERDOWN, QUIT, MOUSEBUTTONDOWN,
-                    Surface, Vector2, Color,
+                    Color, Surface, Vector2,
                     init, quit as squit,
                     K_ESCAPE)
-from typing import List, Tuple
 from math import ceil, log10
 from pathlib import Path
 from sys import exit
 
-exec("""
-from random import random
-from mlog_lib import raw2d
-from time import sleep""")  # for made pyflake8 shut up
+from random import random  # type: ignore # noqa
+from mlog_lib import raw2d  # type: ignore # noqa
+from time import sleep  # type: ignore # noqa
 
 
 font.init()
@@ -31,19 +29,19 @@ font_width: float = FONT.size("ABCDEFGHIJKLMNOPQRSTUVWXYZ"  # font not monospace
                               "абвгдеёжзийклмнопрстуфхцчшщъыьэюя")[0]/118
 font_height: int = 12
 
-Cbg: Color = Color(18, 18, 18)
-Cfg: Color = Color(36, 36, 36)
-Ctxt: Color = Color(207, 212, 218)
-Ctxt2: Color = Color(164, 161, 171)
-Coutline: Color = Color(255, 255, 255)
-Cerror: Color = Color(255, 15, 15)
-Cwarn: Color = Color(240, 255, 0)
+Cbg: ColorValue = Color(18, 18, 18)
+Cfg: ColorValue = Color(36, 36, 36)
+Ctxt: ColorValue = Color(207, 212, 218)
+Ctxt2: ColorValue = Color(164, 161, 171)
+Coutline: ColorValue = Color(255, 255, 255)
+Cerror: ColorValue = Color(255, 15, 15)
+Cwarn: ColorValue = Color(240, 255, 0)
 
 delta: float = 1/60
 mouse_pos: Vector2 = Vector2()
-mouse_pressed: Tuple[bool, bool, bool]
-keys_pressed: Tuple[bool]
-events: Tuple[event.Event]
+mouse_pressed: tuple[bool, bool, bool]
+keys_pressed: key.ScancodeWrapper
+events: list[event.Event]
 
 key.set_repeat(200, 100)
 key.start_text_input()
@@ -65,20 +63,20 @@ def queuit() -> None:
 
 linelog10: int = ceil(log10(len(code_textarea.value)+1))
 processor_width: int = 1
-processor_color: Color = (0, 0, 0)
+processor_color: ColorValue = (0, 0, 0)
 processor_surface: Surface = Surface((176, 176))
 processor_speed: float = 1/120
 processor_counter: int = 0
 processor_textbuffer: str = ""
-processor_cursor_pos: List[int] = [0, 0]
+processor_cursor_pos: list[int] = [0, 0]
 processor_vertical_offset: float = 0
 
 display1: Surface = Surface(processor_surface.size)
 text_surface: Surface
-cell1: List[str] = ["" for _ in range(64)]
-decoded: List[str] = ["" for _ in range(len(code_textarea.value))]
-excepp: List[str] = ["" for _ in range(len(code_textarea.value))]
-timer: int = 0
+cell1: list[str] = ["" for _ in range(64)]
+decoded: list[str] = ["" for _ in range(len(code_textarea.value))]
+excepp: list[str] = ["" for _ in range(len(code_textarea.value))]
+timer: float = 0
 
 processor_surface.fill(Cbg)
 
@@ -107,7 +105,7 @@ while True:
                 code_textarea.manager.cursor_pos.x = int(mouse_pos.x//font_width-linelog10)
 
     code_textarea.update(events)
-    processor_cursor_pos[0] = FONT.size(code_textarea.manager.left[-1])[0]/font_width
+    processor_cursor_pos[0] = int(FONT.size(code_textarea.manager.left[-1])[0]/font_width)
     processor_cursor_pos[1] = code_textarea.manager.cursor_pos.y
 
     inputt_len: int = len(code_textarea.value)
@@ -154,47 +152,47 @@ while True:
     for j, i in enumerate(code_textarea.value):
         if excepp[j]:
             draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height+processor_vertical_offset, font_width, font_height))
-            draw.rect(WIN, (Cerror[0]/4, Cerror[1]/4, Cerror[2]/4),
+            draw.rect(WIN, (Cerror[0]//4, Cerror[1]//4, Cerror[2]//4),
                       (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
         elif decoded[j] == trans_m_to_p("NotImplemented"):
             draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height+processor_vertical_offset, font_width, font_height))
-            draw.rect(WIN, (Cwarn[0]/4, Cwarn[1]/4, Cwarn[2]/4),
+            draw.rect(WIN, (Cwarn[0]//4, Cwarn[1]//4, Cwarn[2]//4),
                       (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
         elif i.replace(' ', ''):
-            command_color = get_command_color(i.split(maxsplit=1)[0])
+            command_color: Color = Color(get_command_color(i.split(maxsplit=1)[0]))  # type: ignore
             draw.rect(WIN, command_color,
                       (0, j*font_height+processor_vertical_offset, font_width*(linelog10), font_height))
-            WIN.blit(FONT.render(f"{j}", 1, (((command_color[0]+128) % 256)/2,
-                                             ((command_color[1]+128) % 256)/2,
-                                             ((command_color[2]+128) % 256)/2)), (0, font_height*j+processor_vertical_offset))
+            WIN.blit(FONT.render(f"{j}", True, (((command_color[0]+128) % 256)//2,
+                                                ((command_color[1]+128) % 256)//2,
+                                                ((command_color[2]+128) % 256)//2)), (0, font_height*j+processor_vertical_offset))
         else:
-            WIN.blit(FONT.render(f"{j}", 1, Ctxt2), (0, font_height*j+processor_vertical_offset))
+            WIN.blit(FONT.render(f"{j}", True, Ctxt2), (0, font_height*j+processor_vertical_offset))
 
-        WIN.blit(FONT.render(i, 1, Ctxt),
+        WIN.blit(FONT.render(i, True, Ctxt),
                  (font_width*(linelog10+0.5), font_height*j+processor_vertical_offset))
 
         if mouse_pos.x >= WIDTH-font_width:
-            WIN.blit(FONT.render(f"{decoded[j]!r}", 1, Ctxt2),
+            WIN.blit(FONT.render(f"{decoded[j]!r}", True, Ctxt2),
                      (WIDTH-FONT.size(f"{decoded[j]!r}")[0]-font_width, font_height*j+processor_vertical_offset))
-            WIN.blit(FONT.render(excepp[j], 1, Cerror),
+            WIN.blit(FONT.render(excepp[j], True, Cerror),
                      (WIDTH-FONT.size(excepp[j])[0]-font_width, font_height*j+processor_vertical_offset))
 
     for j, i in enumerate(processor_textbuffer):
-        text_surface = FONT.render(i, 1, (127, 255, 127))
+        text_surface = FONT.render(i, True, (127, 255, 127))
         WIN.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j+processor_vertical_offset)))
 
     draw.aaline(WIN, Coutline, (font_width*linelog10, 0), (font_width*linelog10, HEIGHT))
-    if code_textarea._cursor_visible:
+    if code_textarea.cursor_visible:
         draw.rect(WIN, (255, 255, 255),
                   ((processor_cursor_pos[0]+(linelog10+0.5))*font_width, (processor_cursor_pos[1])*font_height+processor_vertical_offset,
-                   code_textarea._cursor_width, font_height))
+                   code_textarea.cursor_width, font_height))
 
-    WIN.blits([(FONT.render(var, 1, Ctxt2), (WIDTH/2, font_height*(y+1)))
+    WIN.blits([(FONT.render(var, True, Ctxt2), (WIDTH/2, font_height*(y+1)))
                for y, var in enumerate((f"{i[0]} = {i[1]!r}"
                                         for i in globals().items()
                                         if i[0] not in ("__name__", "__doc__", "__package__", "__loader__", "__spec__", "__annotations__", "__builtins__", "__file__", "__cached__",
                                                         "mlog_to_python", "TextInputManager", "TextInputVisualizer", "display", "draw", "event", "font", "key", "mouse", "time", "Surface",
-                                                        "Vector2", "Color", "init", "squit", "K_ESCAPE", "QUIT", "List", "Tuple", "ceil", "log10", "Path", "exit", "raw2d")))])
+                                                        "Vector2", "Color", "init", "squit", "K_ESCAPE", "QUIT", "list", "tuple", "ceil", "log10", "Path", "exit", "raw2d")))])
 
     display.flip()
     delta = CLOCK.tick()/1000

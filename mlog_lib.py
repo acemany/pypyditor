@@ -1,56 +1,68 @@
+from math import (log, log10, floor, ceil, sqrt,
+                  asin, acos, atan, atan2,
+                  sin, cos, tan,
+                  pi)
 from pygame import (event, font, time,
-                    Color, Rect, Surface,
-                    KEYDOWN, KMOD_CTRL)
-from typing import List, Tuple
+                    Color, Surface,
+                    KEYDOWN)
+from collections.abc import Callable, Sequence
 from functools import cache
+from random import random
+
+
+ColorValue = Color | int | str | Sequence[int]
 
 
 class Vector2i:
     x: int
     y: int
 
-    def __init__(self, x: int | List[int], y: int | None = None):
+    def __init__(self, x: int | tuple[int, int], y: int | None = None):
         """Just 2d vector with int as axes\n
         Vector2i(6, 9)\n
         Vector2i([6, 9])"""
-        if y is not None:
+        if isinstance(x, tuple):
+            self.x, self.y = x
+        elif isinstance(y, int):
             self.x = x
             self.y = y
         else:
-            self.x, self.y = x
+            raise TypeError('Wrong types')
 
-    def __getitem__(self, i) -> int:
+    def __getitem__(self, i: int) -> int:
         return (self.x, self.y)[i]
 
     @property
-    def xy(self) -> List[int]:
-        return [self.x, self.y]
+    def xy(self) -> tuple[int, int]:
+        return (self.x, self.y)
 
     @xy.setter
-    def xy(self, a: List[int]):
+    def xy(self, a: tuple[int, int]):
         self.x, self.y = a
 
     @property
-    def yx(self) -> List[int]:
-        return [self.y, self.x]
+    def yx(self) -> tuple[int, int]:
+        return (self.y, self.x)
 
     @yx.setter
-    def yx(self, a: List[int]):
+    def yx(self, a: tuple[int, int]):
         self.y, self.x = a
 
-    def update(self, x: int | List[int], y: int | None = None):
+    def update(self, x: int | tuple[int, int], y: int | None = None):
         "Set new position"
-        if y is not None:
+        if isinstance(x, tuple):
+            self.x, self.y = x
+        elif isinstance(y, int):
             self.x = x
             self.y = y
         else:
-            self.x, self.y = x
+            raise TypeError('Wrong types')
 
 
 class TextInputManager:
     def __init__(self,
-                 initial: List[str]):
-        self.value: List[str] = initial if initial else [""]
+                 initial: list[str] | None = None):
+        self.value: list[str] = initial if initial is not None else [""]
         self.cursor_pos: Vector2i = Vector2i(len(self.value[-1]), len(self)-1)
 
     def __len__(self):
@@ -61,31 +73,31 @@ class TextInputManager:
         return self.value[self.cursor_pos.y]
 
     @cur_line.setter
-    def cur_line(self, a):
+    def cur_line(self, a: str):
         self.value[self.cursor_pos.y] = a
 
     @property
-    def left(self) -> List[str]:
+    def left(self) -> list[str]:
         return [*self.value[:self.cursor_pos.y],
                 self.cur_line[:self.cursor_pos.x]]
 
     @left.setter
-    def left(self, a: List[str]) -> List[str]:
+    def left(self, a: list[str]) -> None:
         self.value = [*a[:-1],
                       a[-1] + self.right[0],
                       *self.right[1:]]
 
     @property
-    def right(self) -> List[str]:
+    def right(self) -> list[str]:
         return [self.cur_line[self.cursor_pos.x:],
                 *self.value[self.cursor_pos.y+1:]]
 
     # @right.setter
-    # def right(self, a: List[str]) -> List[str]:
+    # def right(self, a: list[str]) -> list[str]:
     #     self.value[:self.cursor_pos.y]
     #     self.cur_line = self.cur_line[self.cursor_pos.x:]
 
-    def update(self, events: List[event.Event]) -> None:
+    def update(self, events: list[event.Event]) -> None:
         for e in events:
             if e.type == KEYDOWN:
                 self._process_keydown(e)
@@ -100,7 +112,7 @@ class TextInputManager:
                 elif self.cursor_pos.y > 0:
                     right_part: str = self.cur_line
                     self.value.pop(self.cursor_pos.y)
-                    next_cursor_pos: List[int] = (len(self.value[self.cursor_pos.y-1]), self.cursor_pos.y-1)
+                    next_cursor_pos: tuple[int, int] = (len(self.value[self.cursor_pos.y-1]), self.cursor_pos.y-1)
                     self.value[self.cursor_pos.y-1] += right_part
                     self.cursor_pos.update(next_cursor_pos)
             case 127:                    # K_DELETE
@@ -156,15 +168,15 @@ class TextInputVisualizer:
                  manager: TextInputManager | None = None,
                  font_object: font.Font | None = None,
                  antialias: bool = True,
-                 font_color: Color = 0,
+                 font_color: ColorValue = 0,
                  cursor_blink_interval: int = 300,
                  cursor_width: int = 3,
-                 cursor_color: Color = 0):
+                 cursor_color: ColorValue = 0):
 
         self.manager: TextInputManager = TextInputManager() if manager is None else manager
         self._font_object: font.FontType = font.Font(font.get_default_font(), 25) if font_object is None else font_object
         self._antialias: bool = antialias
-        self._font_colorColor: Color = font_color
+        self._font_colorColor: ColorValue = font_color
 
         self._clock: time.Clock = time.Clock()
         self._cursor_blink_interval: float = cursor_blink_interval
@@ -172,25 +184,25 @@ class TextInputVisualizer:
         self._last_blink_toggle: float = 0
 
         self._cursor_width: int = cursor_width
-        self._cursor_color: Color = cursor_color
+        self._cursor_color: ColorValue = cursor_color
 
         self._surface: Surface = Surface((self._cursor_width, self._font_object.get_height()))
         self._rerender_required: bool = True
 
     @property
-    def value(self) -> List[str]:
+    def value(self) -> list[str]:
         return self.manager.value
 
     @value.setter
-    def value(self, v: str):
+    def value(self, v: list[str]):
         self.manager.value = v
 
-    @property
-    def surface(self):
-        if self._rerender_required:
-            self._rerender()
-            self._rerender_required = False
-        return self._surface
+    # @property
+    # def surface(self):
+    #     if self._rerender_required:
+    #         self._rerender()
+    #         self._rerender_required = False
+    #     return self._surface
 
     @property
     def antialias(self):
@@ -206,7 +218,7 @@ class TextInputVisualizer:
         return self._font_color
 
     @font_color.setter
-    def font_color(self, v: List[int]):
+    def font_color(self, v: list[int]):
         self._font_color = v
         self._require_rerender()
 
@@ -243,7 +255,7 @@ class TextInputVisualizer:
         return self._cursor_color
 
     @cursor_color.setter
-    def cursor_color(self, v: List[int]):
+    def cursor_color(self, v: list[int]):
         self._cursor_color = v
         self._require_rerender()
 
@@ -255,7 +267,7 @@ class TextInputVisualizer:
     def cursor_blink_interval(self, v: int):
         self._cursor_blink_interval = v
 
-    def update(self, events: List[event.Event]):
+    def update(self, events: list[event.Event]):
         value_before = self.manager.value
         self.manager.update(events)
         if self.manager.value != value_before:
@@ -277,29 +289,30 @@ class TextInputVisualizer:
     def _require_rerender(self):
         self._rerender_required = True
 
-    def _rerender(self):
-        rendered_surface = self.font_object.render(self.manager.value + " ",
-                                                   self.antialias,
-                                                   self.font_color)
-        w, h = rendered_surface.get_size()
-        self._surface = Surface((w + self._cursor_width, h))
-        self._surface = self._surface.convert_alpha(rendered_surface)
-        self._surface.fill((0, 0, 0, 0))
-        self._surface.blit(rendered_surface, (0, 0))
+    # def _rerender(self):
+    #     rendered_surface = self.font_object.render(self.manager.value + " ",
+    #                                                self.antialias,
+    #                                                self.font_color)
+    #     w, h = rendered_surface.get_size()
+    #     self._surface = Surface((w + self._cursor_width, h))
+    #     self._surface = self._surface.convert_alpha(rendered_surface)
+    #     self._surface.fill((0, 0, 0, 0))
+    #     self._surface.blit(rendered_surface, (0, 0))
 
-        if self._cursor_visible:
-            str_left_of_cursor = self.manager.value[:self.manager.cursor_pos]
-            cursor_y = self.font_object.size(str_left_of_cursor)[0]
-            cursor_rect = Rect(cursor_y, 0, self._cursor_width, self.font_object.get_height())
-            self._surface.fill(self._cursor_color, cursor_rect)
+    #     if self._cursor_visible:
+    #         str_left_of_cursor = self.manager.value[:self.manager.cursor_pos]
+    #         cursor_y = self.font_object.size(str_left_of_cursor)[0]
+    #         cursor_rect = Rect(cursor_y, 0, self._cursor_width, self.font_object.get_height())
+    #         self._surface.fill(self._cursor_color, cursor_rect)
 
 
 @cache
 def trans_m_to_p(a: str):
-    return compile(mlog_to_python(a), '', 'exec')
+    return mlog_to_python(a)
+    return mlog_to_lambda(a)
 
 
-def dot(g: Tuple[int], x: float, y: float):
+def dot(g: tuple[int, int, int], x: float, y: float):
     return g[0] * x + g[1] * y
 
 
@@ -354,7 +367,7 @@ def raw2d(seed: int, x: float, y: float) -> float:
                                                   )[perm(seed, ii + 1 + perm(seed, jj + 1)) % 12],   x2, y2))))
 
 
-def get_command_color(word: str) -> str:
+def get_command_color(word: str) -> ColorValue:
     """return color of command\n
     I/O - #a08a8a\n
     flush - #d4816b\n
@@ -375,7 +388,7 @@ def mlog_to_python(code: str) -> str:
     args[1] is the type of command if command is draw or op, else it is first arg\n
     other args is just args"""
 
-    args: Tuple[str] = code.split()
+    args: list[str] = code.split()
 
     match args[0]:
         case "read":
@@ -419,6 +432,7 @@ def mlog_to_python(code: str) -> str:
         case "set":
             return f"global {args[1]};{args[1]} = {args[2]}"
         case "op":
+            opeq: str = "0"
             match args[1]:
                 case "add":
                     opeq = f"{args[3]} + {args[4]}"
