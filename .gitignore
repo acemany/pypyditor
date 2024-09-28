@@ -4,3 +4,5 @@ __pycache__/
 
 *.log
 *test*.py
+/.idea
+/build
