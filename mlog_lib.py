@@ -553,3 +553,187 @@ def mlog_to_python(code: str) -> str:
 
         case _:
             return "NotImplemented"
+
+"""
+def mlog_to_lambda(code: str) -> Callable[..., object]:
+    \"""Transforms Mlog code(from processors from Mindustry) to python code.\n
+    args[0] is the name of command\n
+    args[1] is the type of command if command is draw or op, else it is first arg\n
+    other args is just args\"""
+
+    args: list[str] = code.split()
+
+    match args[0]:
+        case "read":
+            return f"{args[1]} = {args[2]}[{args[3]}]"
+        case "write":
+            return f"{args[2]}[{args[3]}] = {args[1]}"
+        case "draw":
+            match args[1]:
+                case "clear":
+                    return f"processor_surface.fill(({int(args[2])}, {int(args[3])}, {int(args[4])}))"
+                case "color":
+                    return f"processor_color = ({args[2]}, {args[3]}, {args[4]}, {args[5]})"
+                case "col":
+                    return f"processor_color = ({int(args[2][1:3], base=16)}, {int(args[2][3:5], base=16)}, {int(args[2][5:7], base=16)})"
+                case "stroke":
+                    return f"processor_width = {args[2]}"
+                case "line":
+                    return f"draw.line(processor_surface, processor_color, ({args[2]}, {args[3]}), ({args[4]}, {args[5]}), processor_width)"
+                case "rect":
+                    return f"draw.rect(processor_surface, processor_color, ({args[2]}, {args[3]}, {args[4]}, {args[5]}))"
+                case "lineRect":
+                    return f"draw.rect(processor_surface, processor_color, ({args[2]}, {args[3]}, {args[4]}, {args[5]}), processor_width)"
+                case "poly":
+                    return f"draw.polygon(processor_surface, processor_color, [({args[2]}+cos(pi*2/{args[4]}*j+{args[6]})*{args[5]}, {args[3]}+sin(pi*2/{args[4]}*j+{args[6]})*{args[5]}) for j in range({args[4]})])"
+                case "linePoly":
+                    return f"draw.polygon(processor_surface, processor_color, [({args[2]}+cos(pi*2/{args[4]}*j+{args[6]})*{args[5]}, {args[3]}+sin(pi*2/{args[4]}*j+{args[6]})*{args[5]}) for j in range({args[4]})], processor_width)"
+                case "triangle":
+                    return f"draw.polygon(processor_surface, processor_color, (({args[2]}, {args[3]}), ({args[4]}, {args[5]}), ({args[6]}, {args[7]})))"
+                case "image":
+                    return "NotImplemented"
+                case _:
+                    return "NotImplemented"
+        case "print":
+            return f"processor_textbuffer += str({args[1]})"
+
+        case "drawflush":
+            return f"{args[1]}.blit(processor_surface, (0, 0))"
+        case "printflush":
+            return ''  # TODO not to do nothing
+
+        case "set":
+            return f"global {args[1]};{args[1]} = {args[2]}"
+        case "op":
+            a = float(args[2])
+            b = float(args[3])
+
+            opeq: float | int = 0
+
+            match args[1]:
+                case "add":
+                    opeq = a + b
+                case "sub":
+                    opeq = a - b
+                case "mul":
+                    opeq = a * b
+                case "div":
+                    opeq = a / b
+                case "idiv":
+                    opeq = a // b
+                case "mod":
+                    opeq = a % b
+                case "pow":
+                    opeq = a ** b
+
+                case "equal":
+                    opeq = 1 if abs(a - b) < 0.000001 else 0
+                case "notEqual":
+                    opeq = 0 if abs(a - b) < 0.000001 else 1
+                case "land":
+                    opeq = 1 if a != 0 and b != 0 else 0
+                case "lessThan":
+                    opeq = 1 if a < b else 0
+                case "lessThanEq":
+                    opeq = 1 if a <= b else 0
+                case "greaterThan":
+                    opeq = 1 if a > b else 0
+                case "greaterThanEq":
+                    opeq = 1 if a >= b else 0
+                case "strictEqual":
+                    opeq = a is b
+
+                case "shl":
+                    opeq = int(a) << int(b)
+                case "shr":
+                    opeq = int(a) >> int(b)
+                case "or":
+                    opeq = int(a) | int(b)
+                case "and":
+                    opeq = int(a) & int(b)
+                case "xor":
+                    opeq = int(a) ^ int(b)
+                case "not":
+                    opeq = ~int(a)
+
+                case "max":
+                    opeq = max(a, b)
+                case "min":
+                    opeq = min(a, b)
+                case "angle":
+                    ang = atan2(a, b) * 180 / pi
+                    if ang < 0:
+                        ang += 360
+                    opeq = ang
+                case "angleDiff":
+                    opeq = min(a % 360 - b % 360 + 360 if (a % 360 - b % 360) < 0 else a % 360 - b % 360,
+                               b % 360 - a % 360 + 360 if (b % 360 - a % 360) < 0 else b % 360 - a % 360)
+                case "len":
+                    opeq = abs(a - b)
+                case "noise":
+                    opeq = raw2d(0, a, b)
+                case "abs":
+                    opeq = abs(a)
+                case "log":
+                    opeq = log(a)
+                case "log10":
+                    opeq = log10(a)
+                case "floor":
+                    opeq = floor(a)
+                case "ceil":
+                    opeq = ceil(a)
+                case "sqrt":
+                    opeq = sqrt(a)
+                case "rand":
+                    opeq = random() * a
+
+                case "sin":
+                    opeq = sin(a * 0.017453292519943295)
+                case "cos":
+                    opeq = cos(a * 0.017453292519943295)
+                case "tan":
+                    opeq = tan(a * 0.017453292519943295)
+
+                case "asin":
+                    opeq = asin(a) * 0.017453292519943295
+                case "acos":
+                    opeq = acos(a) * 0.017453292519943295
+                case "atan":
+                    opeq = atan(a) * 0.017453292519943295
+                case _:
+                    opeq = a
+
+            exec(f"a = {opeq}")
+            return lambda: 0
+
+        case "wait":
+            return f"sleep({args[1]})"
+        case "stop":
+            return "1/0"
+        case "end":
+            return "processor_counter = 0"
+        case "jump":
+            match args[2]:
+                case "equal":
+                    cond = f"{args[3]} == {args[4]}"
+                case "notEqual":
+                    cond = f"{args[3]} != {args[4]}"
+                case "lessThan":
+                    cond = f"{args[3]} < {args[4]}"
+                case "lessThanEq":
+                    cond = f"{args[3]} <= {args[4]}"
+                case "greaterThan":
+                    cond = f"{args[3]} > {args[4]}"
+                case "greaterThanEq":
+                    cond = f"{args[3]} >= {args[4]}"
+                case "strictEqual":
+                    cond = "False"
+                case "always":
+                    cond = "True"
+                case _:
+                    return "NotImplemented"
+            return f"processor_counter = {args[1]}-1 if {cond} else processor_counter"
+
+        case _:
+            return "NotImplemented"
+"""

@@ -5,6 +5,7 @@ from pygame import (display, draw, event, font, key, mouse, time, transform,
                     Color, Surface, Vector2,
                     init, quit as squit,
                     K_ESCAPE)
+from pyndustric import Compiler
 from math import ceil, log10
 from pathlib import Path
 from sys import exit
@@ -22,7 +23,10 @@ SC_RES: Vector2 = Vector2(WIN.get_size())
 WIDTH, HEIGHT = SC_RES
 FONT: font.Font = font.SysFont('Monospace', 12, bold=True)
 CLOCK: time.Clock = time.Clock()
-gamedir: Path = Path(__file__).parent
+COMPILER = Compiler()
+
+save_path: Path = Path(__file__).parent
+save_file: Path = save_path/"pyexa.py"
 font_width: float = FONT.size("ABCDEFGHIJKLMNOPQRSTUVWXYZ"  # font not monospaced...
                               "abcdefghijklmnopqrstuvwxyz"
                               "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
@@ -46,7 +50,7 @@ events: list[event.Event]
 key.set_repeat(200, 100)
 key.start_text_input()
 
-with open(gamedir/"codeexample.mlog", "r", encoding="utf-8") as f:
+with open(save_file, "r", encoding="utf-8") as f:
     exec("from pygame import draw")
     code_textarea: TextInputVisualizer = TextInputVisualizer(TextInputManager(f.read().splitlines()),
                                                              FONT, True, Ctxt,
@@ -55,7 +59,7 @@ del f
 
 
 def queuit() -> None:
-    with open(gamedir/"codeexample.mlog", "w", encoding="utf-8") as f:
+    with open(save_file, "w", encoding="utf-8") as f:
         f.write("\n".join(code_textarea.value))
     squit()
     exit()
@@ -105,7 +109,7 @@ while True:
                 code_textarea.manager.cursor_pos.x = int(mouse_pos.x//font_width-linelog10)
 
     code_textarea.update(events)
-    processor_cursor_pos[0] = int(FONT.size(code_textarea.manager.left[-1])[0]/font_width)
+    processor_cursor_pos[0] = FONT.size(code_textarea.manager.left[-1])[0]/font_width
     processor_cursor_pos[1] = code_textarea.manager.cursor_pos.y
 
     inputt_len: int = len(code_textarea.value)
@@ -125,19 +129,20 @@ while True:
         timer -= processor_speed
         processor_counter %= inputt_len
 
-        raw_line: str = code_textarea.value[processor_counter]
         try:
-            excepp[processor_counter] = ""
-            decoded[processor_counter] = ""
-            if not raw_line:  # if empty
-                processor_counter += 1
-                continue
-            k = raw_line.split()
-            if k[0] == "op" and k[2] not in globals():
-                exec(f"global {k[2]};{k[2]} = 0")
-            _ = trans_m_to_p(raw_line)
-            decoded[processor_counter] = _
-            exec(_)
+            raw_line: str = COMPILER.compile(code_textarea.value[processor_counter])
+            for i in raw_line.splitlines():
+                excepp[processor_counter] = ""
+                decoded[processor_counter] = ""
+                if not raw_line:  # if empty
+                    processor_counter += 1
+                    continue
+                k = raw_line.split()
+                if k[0] == "op" and k[2] not in globals():
+                    exec(f"global {k[2]};{k[2]} = 0")
+                _ = trans_m_to_p(raw_line)
+                decoded[processor_counter] = _
+                exec(_)
         except Exception as e:
             decoded[processor_counter] = ""
             excepp[processor_counter] = f"{e!s}"
