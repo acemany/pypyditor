@@ -3,8 +3,9 @@ __pycache__/
 *.py[cod]
 
 # Logs and test files
-*.log
 *test*.py
+/typings
+*.log
 
 # Build folders
 .idea/

@@ -383,7 +383,7 @@ def get_command_color(word: str) -> ColorValue:
 
 
 def mlog_to_python(code: str) -> str:
-    """Transforms Mlog code(from processors from Mindustry) to python code.\n
+    """Transforms Mlog code to Python code.\n
     args[0] is the name of command\n
     args[1] is the type of command if command is draw or op, else it is first arg\n
     other args is just args"""
