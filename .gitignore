@@ -2,7 +2,13 @@
 __pycache__/
 *.py[cod]
 
+# Logs and test files
 *.log
 *test*.py
-/.idea
-/build
+
+# Build folders
+.idea/
+build/
+
+# Venv
+.venv/
