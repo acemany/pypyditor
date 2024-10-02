@@ -13,3 +13,4 @@ build/
 
 # Venv
 .venv/
+pyexa.py
