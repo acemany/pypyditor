@@ -65,6 +65,9 @@ class TextInputManager:
         self.value: list[str] = initial if initial is not None else [""]
         self.cursor_pos: Vector2i = Vector2i(len(self.value[-1]), len(self)-1)
 
+    def __str__(self) -> str:
+        return "\n".join(self.value)
+
     def __len__(self):
         return len(self.value)
 
@@ -196,6 +199,9 @@ class TextInputVisualizer:
     @value.setter
     def value(self, v: list[str]):
         self.manager.value = v
+
+    def __str__(self) -> str:
+        return str(self.manager)
 
     # @property
     # def surface(self):
