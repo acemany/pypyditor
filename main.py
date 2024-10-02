@@ -83,6 +83,8 @@ text_surface: Surface
 cell1: list[str] = ["" for _ in range(64)]
 decoded: list[str] = ["" for _ in range(len(code_textarea.value))]
 excepp: list[str] = ["" for _ in range(len(code_textarea.value))]
+mlython_str: list[str] = []
+inputt_len: int = 0
 timer: float = 0
 
 processor_surface.fill(Cbg)
@@ -115,66 +117,69 @@ while True:
     processor_cursor_pos[0] = FONT.size(code_textarea.manager.left[-1])[0]/font_width
     processor_cursor_pos[1] = code_textarea.manager.cursor_pos.y
 
-    inputt_len: int = len(code_textarea.value)
+    try:
+        mlython_str = COMPILER.compile(str(code_textarea)).splitlines()
+        inputt_len = len(mlython_str)
+    except Exception as e:
+        excepp[0] = str(e)
+        inputt_len = 0
 
-    while len(decoded) != inputt_len:
-        if len(decoded) < inputt_len:
-            decoded.append("")
-            excepp.append("")
-        elif len(decoded) > inputt_len:
-            decoded.pop()
-            excepp.pop()
+    linelog10 = ceil(log10(inputt_len)) if inputt_len else 0
+    if inputt_len:
+        while len(decoded) != inputt_len:
+            if len(decoded) < inputt_len:
+                decoded.append("")
+                excepp.append("")
+            elif len(decoded) > inputt_len:
+                decoded.pop()
+                excepp.pop()
 
-    if 1:
-        linelog10 = ceil(log10(inputt_len))
+        while timer >= processor_speed:
+            timer -= processor_speed
+            processor_textbuffer += str(processor_counter)
 
-    while timer >= processor_speed:
-        timer -= processor_speed
-        processor_counter %= inputt_len
-
-        try:
-            raw_line: str = COMPILER.compile(code_textarea.value[processor_counter])
-            for i in raw_line.splitlines():
+            try:
+                raw_line: str = mlython_str[processor_counter]
                 excepp[processor_counter] = ""
                 decoded[processor_counter] = ""
-                if not raw_line:  # if empty
-                    processor_counter += 1
-                    continue
-                k = raw_line.split()
-                if k[0] == "op" and k[2] not in globals():
-                    exec(f"global {k[2]};{k[2]} = 0")
-                _ = trans_m_to_p(raw_line)
-                decoded[processor_counter] = _
-                exec(_)
-        except Exception as e:
-            decoded[processor_counter] = ""
-            excepp[processor_counter] = f"{e!s}"
-        processor_counter += 1
+                if raw_line:  # if not empty
+                    k = raw_line.split()
+                    if k[0] == "op" and k[2] not in globals():
+                        exec(f"global {k[2]};{k[2]} = 0")
+                    _ = trans_m_to_p(raw_line)
+                    decoded[processor_counter] = _
+                    exec(_)
+            except Exception as e:
+                decoded[processor_counter] = ""
+                excepp[processor_counter] = f"{e!s}"
+            processor_counter = processor_counter + 1 if processor_counter < inputt_len else 0
+            print(processor_counter)
 
-    if len(decoded) != len(excepp) != inputt_len:
-        print(decoded, excepp, code_textarea.value)
-        raise IndexError("These lists not match? Strange...")
+        if len(decoded) != len(excepp) != inputt_len:
+            print(decoded, excepp, mlython_str)
+            raise IndexError("These lists not match? Strange...")
 
     WIN.blit(transform.flip(display1, False, True), (WIDTH/2-176, 0))
 
-    for j, i in enumerate(code_textarea.value):
-        if excepp[j]:
+    for j, i in enumerate(excepp):
+        if i:
             draw.rect(WIN, Cerror, (WIDTH-font_width, j*font_height+processor_vertical_offset, font_width, font_height))
             draw.rect(WIN, (Cerror[0]//4, Cerror[1]//4, Cerror[2]//4),
                       (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
-        elif decoded[j] == trans_m_to_p("NotImplemented"):
-            draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height+processor_vertical_offset, font_width, font_height))
-            draw.rect(WIN, (Cwarn[0]//4, Cwarn[1]//4, Cwarn[2]//4),
-                      (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
-        elif i.replace(' ', ''):
-            command_color: Color = Color(get_command_color(i.split(maxsplit=1)[0]))  # type: ignore
+
+    for j, i in enumerate(code_textarea.value):
+        # if decoded[j] == "NotImplemented":
+        #     draw.rect(WIN, Cwarn, (WIDTH-font_width, j*font_height+processor_vertical_offset, font_width, font_height))
+        #     draw.rect(WIN, (Cwarn[0]//4, Cwarn[1]//4, Cwarn[2]//4),
+        #               (0, j*font_height+processor_vertical_offset, WIDTH-font_width, font_height))
+        command_color: Color = Color(get_command_color(i.split(maxsplit=1)[0]))  # type: ignore
+        if i.replace(' ', ''):
             draw.rect(WIN, command_color,
                       (0, j*font_height+processor_vertical_offset, font_width*(linelog10), font_height))
-            WIN.blit(FONT.render(f"{j}", True, (((command_color[0]+128) % 256)//2,
-                                                ((command_color[1]+128) % 256)//2,
-                                                ((command_color[2]+128) % 256)//2)), (0, font_height*j+processor_vertical_offset))
-        else:
-            WIN.blit(FONT.render(f"{j}", True, Ctxt2), (0, font_height*j+processor_vertical_offset))
+
+        WIN.blit(FONT.render(f"{j}", True, (((command_color[0]+128) % 256)//2,
+                                            ((command_color[1]+128) % 256)//2,
+                                            ((command_color[2]+128) % 256)//2)), (0, font_height*j+processor_vertical_offset))
 
         WIN.blit(FONT.render(i, True, Ctxt),
                  (font_width*(linelog10+0.5), font_height*j+processor_vertical_offset))
