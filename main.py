@@ -75,7 +75,7 @@ processor_textbuffer: str = ""
 processor_cursor_pos: list[int] = [0, 0]
 processor_vertical_offset: float = 0
 
-display1: Surface = Surface(processor_surface.size)
+display1: Surface = Surface(processor_surface.get_size())
 text_surface: Surface
 cell1: list[str] = ["" for _ in range(64)]
 decoded: list[str] = ["" for _ in range(len(code_textarea.value))]
