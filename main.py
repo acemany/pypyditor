@@ -193,6 +193,7 @@ while True:
     for j, i in enumerate(processor_textbuffer):
         text_surface = FONT.render(i, True, (127, 255, 127))
         WIN.blit(text_surface, text_surface.get_rect(bottomright=SC_RES/2+(0, font_height*j+processor_vertical_offset)))
+    processor_textbuffer = ""
 
     draw.aaline(WIN, Coutline, (font_width*linelog10, 0), (font_width*linelog10, HEIGHT))
     if code_textarea.cursor_visible:
