@@ -6,6 +6,7 @@ __pycache__/
 *test*.py
 /typings
 *.log
+log.*
 
 # Build folders
 .idea/
