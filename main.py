@@ -1,4 +1,4 @@
-from mlog_lib import trans_m_to_p, get_command_color, TextInputManager, TextInputVisualizer, ColorValue
+from mlog_lib import trans_m_to_p, logf, get_command_color, TextInputManager, TextInputVisualizer, ColorValue, app_path
 from pygame import (display, draw, event, font, key, mouse, time, transform,
                     BUTTON_LEFT, BUTTON_WHEELDOWN, BUTTON_WHEELUP,
                     FINGERDOWN, QUIT, MOUSEBUTTONDOWN,
@@ -25,7 +25,7 @@ FONT: font.Font = font.SysFont('Monospace', 12, bold=True)
 CLOCK: time.Clock = time.Clock()
 COMPILER = Compiler()
 
-save_path: Path = Path(__file__).parent
+save_path: Path = app_path
 save_file: Path = save_path/"pyexa.py"
 font_width: float = FONT.size("ABCDEFGHIJKLMNOPQRSTUVWXYZ"  # font not monospaced...
                               "abcdefghijklmnopqrstuvwxyz"
@@ -46,6 +46,9 @@ mouse_pos: Vector2 = Vector2()
 mouse_pressed: tuple[bool, bool, bool]
 keys_pressed: key.ScancodeWrapper
 events: list[event.Event]
+
+with open(app_path/'log.txt', 'w') as f:
+    f.write('')
 
 key.set_repeat(200, 100)
 key.start_text_input()

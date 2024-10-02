@@ -5,9 +5,11 @@ from math import (log, log10, floor, ceil, sqrt,
 from pygame import (event, font, time,
                     Color, Surface,
                     KEYDOWN)
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
+from time import time as unixtime
 from functools import cache
 from random import random
+from pathlib import Path
 
 
 __all__ = ["trans_m_to_p", "logf", "get_command_color",
@@ -17,6 +19,8 @@ __all__ = ["trans_m_to_p", "logf", "get_command_color",
 
 
 ColorValue = Color | int | str | Sequence[int]
+
+app_path: Path = Path(__file__).parent
 
 
 class Vector2i:
@@ -318,10 +322,21 @@ class TextInputVisualizer:
     #         self._surface.fill(self._cursor_color, cursor_rect)
 
 
+def logf(err: str | Exception, warn: int = 0):
+    """Log.
+    `txt` - error text.
+    `warn` - warning level (0 - info, 1 - warning, >1 - error).
+    """
+
+    warn_level = "IWE"[warn]
+    with open(app_path/'log.txt', 'a') as f:
+        f.write(f'[{warn_level}]-{str(unixtime())}:\n{err}\n\n')
+
+
 @cache
 def trans_m_to_p(a: str):
     return mlog_to_python(a)
-    return mlog_to_lambda(a)
+    # return mlog_to_lambda(a)
 
 
 def dot(g: tuple[int, int, int], x: float, y: float):
@@ -565,6 +580,7 @@ def mlog_to_python(code: str) -> str:
 
         case _:
             return "NotImplemented"
+
 
 """
 def mlog_to_lambda(code: str) -> Callable[..., object]:
