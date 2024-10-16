@@ -1,14 +1,14 @@
-from math import (log, log10, floor, ceil, sqrt,
-                  asin, acos, atan, atan2,
-                  sin, cos, tan,
-                  pi)
+from math import (log, log10, floor, ceil, sqrt,  # noqa  # type: ignore
+                  asin, acos, atan, atan2,  # type: ignore
+                  sin, cos, tan,  # type: ignore
+                  pi)  # type: ignore
 from pygame import (event, font, time,
                     Color, Surface,
                     KEYDOWN)
 from collections.abc import Sequence
 from time import time as unixtime
 from functools import cache
-from random import random
+from random import random  # noqa  # type: ignore
 from pathlib import Path
 
 

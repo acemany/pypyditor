@@ -4,7 +4,6 @@ from pygame import (display, event, font, key, mouse, time,
                     K_ESCAPE,
                     QUIT)
 from mlog_lib import TextInputManager, TextInputVisualizer
-from typing import List, Tuple
 from pathlib import Path
 from sys import exit
 exec("from math import pi, cos, sin")
@@ -19,27 +18,26 @@ WIDTH, HEIGHT = SC_RES
 FONT: font.Font = font.SysFont('Monospace', 18, bold=True)
 CLOCK: time.Clock = time.Clock()
 gamedir: Path = Path(__file__).parent
-font_size: Tuple[int, int] = FONT.size("N")
+font_size: tuple[int, int] = FONT.size("N")
 font_width, font_height = font_size
 
-Cbuttonua: Color = (63, 63, 63)
-Cbuttona: Color = (4, 104, 170)
-Cbg: Color = (18, 18, 18)
-Ctxt: Color = (207, 212, 218)
-Ctxt2: Color = (164, 161, 171)
+Cbuttonua: Color = Color(63, 63, 63)
+Cbuttona: Color = Color(4, 104, 170)
+Cbg: Color = Color(18, 18, 18)
+Ctxt: Color = Color(207, 212, 218)
+Ctxt2: Color = Color(164, 161, 171)
 
 delta: float = 0.1/6
 mouse_pos: Vector2 = Vector2()
-mouse_pressed: Tuple[bool, bool, bool]
-keys_pressed: Tuple[bool]
-events = Tuple[event.Event]
+mouse_pressed: tuple[bool, bool, bool]
+keys_pressed: key.ScancodeWrapper
+events = tuple[event.Event]
 
 key.set_repeat(200, 100)
 key.start_text_input()
 
 with open(gamedir/"coded.py", "r") as f:
-    code_textarea: TextInputVisualizer = TextInputVisualizer(TextInputManager(f.read(),
-                                                                              validator=lambda i: True),
+    code_textarea: TextInputVisualizer = TextInputVisualizer(TextInputManager([f.read()]),
                                                              FONT, True, Ctxt)
 del f
 
@@ -51,7 +49,7 @@ def queuit() -> None:
     exit()
 
 
-excepp: List[str] = []
+excepp: list[str] = []
 
 
 while True:
@@ -69,18 +67,18 @@ while True:
     code_textarea.update(events)
 
     excepp.clear()
-    for j, i in enumerate(code_textarea.value.split("\n")):
+    for j, i in enumerate(code_textarea.value):
         try:
             excepp.append("")
             exec(i)
         except Exception as e:
             excepp.append(f" ! {e!s}")
 
-    prepared_code: Tuple[str] = f"{code_textarea.manager.left}|{code_textarea.manager.right}".split("\n")
+    prepared_code: list[str] = f"{'/k/k/k'.join(code_textarea.manager.left)}|{'/k/k/k'.join(code_textarea.manager.right)}".replace('/k/k/k', '\n').split("\n")
     for m, n in enumerate(prepared_code):
-        WIN.blit(FONT.render(f"{n}{excepp[m]}", 1, Ctxt2), (5, font_height*(m+0.5)))
+        WIN.blit(FONT.render(f"{n}{excepp[m]}", True, Ctxt2), (5, font_height*(m+0.5)))
 
-    # WIN.blits(((FONT.render(i, 1, (255, 0, 0)), (5, font_height*j))
+    # WIN.blits(((FONT.render(i, True, (255, 0, 0)), (5, font_height*j))
     #            for j, i in enumerate(excepp)))
 
     display.flip()
